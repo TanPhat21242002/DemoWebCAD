@@ -1,0 +1,12 @@
+.cad-setting {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	display: flex;
+	flex-direction: row;
+	z-index: 9999;
+}
+
+.cad-setting-item {
+	margin-left: 8px;
+}
