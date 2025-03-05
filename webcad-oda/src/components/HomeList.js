@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FloorPlanCard from './FloorPlanCard';
+
 const HomeList = () => {
-  const resultCount= useState(1);
+  const [resultCount] = useState(1);
+  const navigate = useNavigate();
 
   const handleCardClick = (name) => {
-    alert(`Bạn đã chọn: ${name}`);
+    navigate(`/detail/${name}`);
+  };
+
+  const handleEditClick = (name) => {
+    alert(`Edit ${name}`);
   };
 
   return (
@@ -23,6 +30,7 @@ const HomeList = () => {
           details="2 floors / 3 rooms / South, Width: 9.55 m / Depth: 11.83 m, Total floor area: 118 m²"
           imageUrl="/img/pngwing.com.png"
           onClick={() => handleCardClick("Plan A")}
+          onEdit={() => handleEditClick("Plan A")}
         />
       </div>
     </main>

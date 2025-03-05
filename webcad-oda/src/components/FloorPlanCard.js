@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
+import { FaEdit } from "react-icons/fa";
 
-const FloorPlanCard = ({ name, details, imageUrl, onClick }) => {
+const FloorPlanCard = ({ name, details, imageUrl, onClick, onEdit }) => {
   return (
     <div className="floor-plan-card">
-      <img 
-        src={imageUrl} 
-        alt={name} 
-        className="floor-plan-image" 
-        onClick={onClick} 
-        style={{ cursor: 'pointer' }} 
-      />
-      <h2>{name}</h2>
-      <p>{details}</p>
+      <h3>Plan</h3>
+      <div className="image-container">
+        <img src={imageUrl} alt={name} className="floor-image" onClick={onClick} />
+        <button className="edit-btn" onClick={onEdit}>
+          <FaEdit />
+        </button>
+      </div>
+      <p className="plan-details">{details}</p>
     </div>
   );
 };

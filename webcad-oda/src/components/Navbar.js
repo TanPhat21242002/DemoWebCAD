@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <span className="logo-text">myhome-cloud</span>
+        <span className="logo-text">WebCAD-ODA</span>
       </div>
       <ul className="navbar-menu">
         <li><Link to="/">Home List</Link></li>

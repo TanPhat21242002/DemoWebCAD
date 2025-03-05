@@ -58,6 +58,80 @@ body, html {
   margin-bottom: 20px; 
 }
 
+.detail-container {
+  padding: 20px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.back-btn svg {
+  margin-right: 8px;
+}
+
+.plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.edit-icon {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.action-bar {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #f9f9f9;
+}
+
+.action-btn:hover {
+  background: #e9ecef;
+}
+
+.delete-btn {
+  color: red;
+  border-color: red;
+}
+
+.floor-plan h2 {
+  margin-top: 20px;
+}
+
+.floor-image {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
 .breadcrumbs {
   display: flex;
   align-items: center;
