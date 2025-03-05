@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>LayoutBlock</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+      }
+      .canvas-holder {
+        flex-grow: 1;
+        overflow: hidden;
+      }
+
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten {
+        border: 0px none;
+        background-color: black;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="canvas-holder">
+      <canvas
+        class="emscripten"
+        id="canvas"
+        oncontextmenu="event.preventDefault()"
+        tabindex="-1"
+      ></canvas>
+    </div>
+
+    <script src="https://cloud.opendesign.com/examples/examples/drawinginweb/_CommonFiles/notation.js"></script>
+    <script type="text/javascript">
+      var Module = {
+        FS: {},
+        arguments: [],
+        preRun: [],
+        postRun: [
+          function () {
+            const references = []
+
+            function OpenAs(id, type, openMode) {
+              let pObj = id.safeOpenObject(openMode, false);
+              let instance = type.cast(pObj);
+              pObj.delete();
+              references.push(instance)
+              return instance;
+            }
+
+            // ------------------- Initialize ODA lib ----------------
+            Module.canvas = document.querySelector("canvas");
+            const {
+              Services,
+              OdDbBlockTableRecord,
+              OdWrFileBuf,
+              OdDbLinetypeTableRecord,
+              OdGeVector2d,
+              OdString,
+              OdDbLinetypeTable,
+              OdDbTextStyleTableRecord,
+              OdDbTextStyleTable,
+              OdDbLine,
+              OdGePoint3d,
+              OdGePoint2d,
+              OdDbBlockTable,
+              OdDbPolyline, OdDbCircle, OdDbBlockReference, OdDbLayout,
+              OdGeScale3d,OdDbViewport
+            } = Module;
+
+            const OdaPI =  3.14159265358979323846
+            const OdaPI2  = OdaPI / 2.0
+            const OdaPI4  = OdaPI / 4.0
+
+            const services = new Services();
+            services.initialize();
+            let pDb = services.createDatabase();
+            let modelSpaceId = pDb.getModelSpaceId();
+            const pRecord = OpenAs(
+              modelSpaceId,
+              OdDbBlockTableRecord,
+              OpenMode.kForWrite
+            );
+
+            // Open the Block table
+            let blocks = OpenAs(
+              pDb.getBlockTableId(),
+              OdDbBlockTable,
+              OpenMode.kForWrite
+            );
+
+            // Create block record and add it to the Block table
+            let block = OdDbBlockTableRecord.createObject();
+            block.setName(new OdString("MyBlock"));
+            let blockId = blocks.add(block);
+            blocks.delete();
+
+            // Create polyline and add it to the block
+            let polyline = OdDbPolyline.createObject();
+            polyline.setDatabaseDefaults(pDb, false);
+            polyline.setColorIndex(ACIcolorMethod.kACIbyBlock, true);
+            block.appendOdDbEntity(polyline);
+            polyline.addVertexAt(0, new OdGePoint2d(-10.0, -10.0), 0, -1, -1, 0);
+            polyline.addVertexAt(0, new OdGePoint2d(-10.0, -10.0), 0, -1, -1, 0);
+            polyline.addVertexAt(1, new OdGePoint2d(-10.0, 10.0), 0, -1, -1, 0);
+            polyline.addVertexAt(2, new OdGePoint2d(10.0, 10.0), 0, -1, -1, 0);
+            polyline.addVertexAt(3, new OdGePoint2d(10.0, -10.0), 0, -1, -1, 0);
+            polyline.setClosed(true);
+            polyline.delete();
+
+            // Create circle and add it to the block
+            let circle = OdDbCircle.createObject();
+            circle.setDatabaseDefaults(pDb, false);
+            circle.setColorIndex(ACIcolorMethod.kACIbyBlock, true);
+            block.appendOdDbEntity(circle);
+            circle.setCenter(new OdGePoint3d(0.0, 0.0, 0.0));
+            circle.setRadius(10.0);
+            circle.delete();
+
+            block.delete();
+
+            let modelSpace = OpenAs(
+              pDb.getModelSpaceId(),
+              OdDbBlockTableRecord,
+              OpenMode.kForWrite
+            );
+
+            // Create reference to the Block and add it to the model space
+            let blockRef = OdDbBlockReference.createObject();
+            blockRef.setDatabaseDefaults(pDb, false);
+            blockRef.setColorIndex(ACIcolorMethod.kACIRed, true);
+            modelSpace.appendOdDbEntity(blockRef);
+            blockRef.setBlockTableRecord(blockId);
+            blockRef.setPosition(new OdGePoint3d(0.0, 0.0, 0.0));
+            blockRef.delete();
+
+            // Create another reference to the Block and add it to the model space
+            blockRef = OdDbBlockReference.createObject();
+            blockRef.setDatabaseDefaults(pDb, false);
+            blockRef.setColorIndex(ACIcolorMethod.kACIGreen, true);
+            modelSpace.appendOdDbEntity(blockRef);
+            blockRef.setBlockTableRecord(blockId);
+            blockRef.setPosition(new OdGePoint3d(20.0, 0.0, 0.0));
+            blockRef.setRotation(OdaPI4); // 45 degrees
+            blockRef.delete();
+
+            modelSpace.delete();
+
+            // Create new paper space layout
+            let layoutMgr = services.layoutManager();
+            references.push(layoutMgr)
+            let layoutId = layoutMgr.createLayout(pDb, new OdString("MyLayout"), null);
+            // Make new paper space layout to be current
+            layoutMgr.setCurrentLayout(pDb, layoutId);
+
+            let layout = OpenAs(layoutId, OdDbLayout,OpenMode.kForRead );// layoutId.safeOpenObject(OpenMode.kForRead, false);
+
+            // Open new paper space block
+            let paperSpace = OpenAs(
+              layout.getBlockTableRecordId(),
+              OdDbBlockTableRecord,
+              OpenMode.kForWrite
+            );
+
+            // Create another reference to the Block and add it to the papper space
+            blockRef = OdDbBlockReference.createObject();
+            blockRef.setDatabaseDefaults(pDb, false);
+            paperSpace.appendOdDbEntity(blockRef);
+            blockRef.setColorIndex( ACIcolorMethod.kACIBlue, true);
+            blockRef.setBlockTableRecord(blockId);
+            blockRef.setPosition(new OdGePoint3d(8.0, 5.0, 0.0));
+            blockRef.setRotation(-OdaPI4 / 3.0); // -15 degrees
+            blockRef.setScaleFactors(new OdGeScale3d(0.2));
+            blockRef.delete();
+
+            // Create model viewport in the new papper space
+            let viewport = OdDbViewport.createObject();
+            viewport.setDatabaseDefaults(pDb, false);
+            paperSpace.appendOdDbEntity(viewport);
+            viewport.setCenterPoint(new OdGePoint3d(3.5, 2.5, 0.0));
+            viewport.setViewCenter(new OdGePoint2d(10.0, 0.0));
+            viewport.setViewHeight(30);
+            viewport.setHeight(5);
+            viewport.setWidth(7);
+            viewport.delete();
+
+            paperSpace.delete();
+
+            pRecord.delete();
+
+            var cadCore = new Module.CadCore();
+            cadCore.createDevice();
+            cadCore.setDb(pDb);
+            Module.canvas.height = Module.canvas.clientHeight;
+            Module.canvas.width = Module.canvas.clientWidth;
+            cadCore.Resize(Module.canvas.width, Module.canvas.height);
+            cadCore.ZoomExtents();
+            cadCore.Update();
+
+            pDb.delete();
+
+            references.forEach(ref => !ref.isDeleted() && ref.delete());
+            services.uninitialize();
+          },
+        ],
+      };
+    </script>
+    <script async type="text/javascript" src="https://cloud.opendesign.com/examples/fps/DrawingWeb.js"></script>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+.view-position {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	z-index: 9999;
+	display: flex;
+	flex-direction: row;
+	width: 240px;
+	height: 240px;
+}
+
+.view-position canvas {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+}
+
+.view-position label {
+	font-size: 10px;
+	font-weight: bold;
+	color: black;
+	cursor: pointer;
+	user-select: none;
+}
+
+.label-front {
+	position: absolute;
+	top: 56px;
+	left: 90px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+}
+
+.label-top {
+	position: absolute;
+	top: 96px;
+	left: 90px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+}
+
+.label-bottom {
+	position: absolute;
+	top: 128px;
+	left: 90px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+}
+
+.label-back {
+	position: absolute;
+	top: 168px;
+	left: 90px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+}
+
+.label-nw {
+	position: absolute;
+	top: 72px;
+	left: 52px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: -50deg;
+}
+
+.label-ne {
+	position: absolute;
+	top: 72px;
+	left: 128px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: 50deg;
+}
+
+.label-left {
+	position: absolute;
+	top: 108px;
+	left: 38px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: -90deg;
+}
+
+.label-right {
+	position: absolute;
+	top: 110px;
+	left: 140px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: 90deg;
+}
+
+.label-sw {
+	position: absolute;
+	top: 150px;
+	left: 48px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: 46deg;
+}
+
+.label-se {
+	position: absolute;
+	top: 150px;
+	left: 132px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	/* padding-top: 4px; */
+	padding-bottom: 4px;
+	rotate: -49deg;
+}

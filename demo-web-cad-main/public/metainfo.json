@@ -1,0 +1,22 @@
+{
+	"models": [
+		{
+			"name": "Model",
+			"database": "98bb2ee434d13464299f10cf83ad10f9f.vsfx",
+			"geometry": [],
+			"default": true
+		},
+		{
+			"name": "Layout1",
+			"database": "d26a64b44273d7bb6fcac194444cdc68f.vsfx",
+			"geometry": [],
+			"default": false
+		},
+		{
+			"name": "Layout2",
+			"database": "e74b468fbd46cf686324e0e4de07d791f.vsfx",
+			"geometry": [],
+			"default": false
+		}
+	]
+}

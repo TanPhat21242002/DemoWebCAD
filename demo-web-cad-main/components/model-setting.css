@@ -1,0 +1,13 @@
+.model-setting {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	display: flex;
+	flex-direction: row;
+	z-index: 9999;
+}
+
+.model-setting-item {
+	margin-right: 0px;
+	min-width: 80px;
+}
