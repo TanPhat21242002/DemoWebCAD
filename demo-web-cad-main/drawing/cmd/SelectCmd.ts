@@ -2,12 +2,10 @@ import { ACTION_ENTITY, ACTION_MODIFY, CMD_NAME, ENTITY_NAME } from "../config";
 import { ViewerIns } from "../viewer";
 import { EntityCmd } from "./EntityCmd";
 import { ArcCmd } from "./entity/ArcCmd";
-import { BoxCmd } from "./entity/BoxCmd";
 import { CircleCmd } from "./entity/CircleCmd";
 import { EllipseCmd } from "./entity/EllipseCmd";
 import { PolylineCmd } from "./entity/PolylineCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
-import { TextCmd } from "./entity/TextCmd";
 
 export class SelectCmd extends RectangleCmd {
 	private polygonId = null;
@@ -85,15 +83,7 @@ export class SelectCmd extends RectangleCmd {
 		}
 	};
 
-	override onMouseUp = (ev: MouseEvent, point: any, pointWorld: any) => {
-		// if (this.indexCmdModify >= 0 && this.completeSubEvent) {
-		//     this.selectionCmd[this.indexCmdModify].unsubcribeEvents();
-		//     this.indexCmdModify = -1;
-		//     this.completeSubEvent = false;
-		// }
-	};
-
-	override onMouseDown = (ev: MouseEvent, point: any, pointWorld: any) => {
+	override onMouseDown = (ev: MouseEvent, point: any) => {
 		if (!this.geometryDataId && !this.geometryData) {
 			if (this.indexCmdModify >= 0) {
 				this.resetSelectCmd();
@@ -238,12 +228,6 @@ export class SelectCmd extends RectangleCmd {
 						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kEllipse:
 						cmd = new EllipseCmd(CMD_NAME.ELLIPSE, entityId, arr[1]);
-						break;
-					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kText:
-						cmd = new TextCmd(CMD_NAME.TEXT, entityId, arr[1]);
-						break;
-					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kBox:
-						cmd = new BoxCmd(CMD_NAME.TEXT, entityId, arr[1]);
 						break;
 					default:
 						cmd = new EntityCmd(CMD_NAME.OTHER, entityId, arr[1]);

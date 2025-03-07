@@ -161,12 +161,11 @@ export class GridView {
 		selectDef.setEdges(false);
 		this.entityGrid.setSelectability(selectDef);
 	}
-
-	onMouseDown(ev, point) {
+	onMouseDown() {
 		this.deleteSnapPoint();
 	}
 
-	onMouseUp(ev, point) {
+	onMouseUp() {
 		this.deleteSnapPoint();
 	}
 

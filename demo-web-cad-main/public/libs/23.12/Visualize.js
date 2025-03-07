@@ -5683,6 +5683,7 @@ window["getVisualizeLibInst"] = function getVisualizeLibInst(params) {
 					}
 				};
 				addEventListener("message", Browser_setImmediate_messageHandler, true);
+				// eslint-disable-next-line no-global-assign
 				setImmediate = function Browser_emulated_setImmediate(func) {
 					setImmediates.push(func);
 					if (ENVIRONMENT_IS_WORKER) {

@@ -43,6 +43,9 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 			this.modify();
 		}
 	}
+	onZoomChanged(ev: any, data: any): void {
+		throw new Error("Method not implemented.");
+	}
 
 	createConnectedLine(pointS: any, pointE: any) {
 		if (this.connectedLine == null) {
@@ -126,7 +129,6 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_UP, this.onMouseUp);
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_MOVE, this.onMouseMove);
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.KEY_PRESS, this.onKeyPress);
-		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.ZOOM_CHANGED, this.onZoomChanged);
 	}
 
 	beginCmd() {
@@ -309,11 +311,4 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 		}
 		return -1;
 	}
-
-	onZoomChanged = (ev: any, data: any) => {
-		this.pointOverlays.forEach(element => {
-			const polygonData = DrawingUtil.getSquareFromCenter(element.point, DrawingConfig.SIZE_OVERLAY(data.viewFieldWidth));
-			element.polygonId.openAsPolygon().setPoints(polygonData);
-		});
-	};
 }

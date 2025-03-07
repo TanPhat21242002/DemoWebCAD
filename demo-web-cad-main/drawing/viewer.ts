@@ -50,12 +50,11 @@ export class ViewerIns {
 		this.instance.canvas = canvas;
 
 		this.instance.visViewer.createLocalDatabase();
-		this.instance.visViewer.zoomAt(0.01, canvas.width / 2, canvas.height / 2);
+		this.instance.visViewer.zoomAt(0.1, canvas.width / 2, canvas.height / 2);
 
 		this.instance.gridView = new GridView(canvas);
 		this.instance.setViewerDefault();
 		this.instance.initAllEvents();
-		// this.instance.onClickActionView(this.instance.draggerName);
 
 		{
 			const res = await this.instance.downloadFile("./font/bigfont.shx");
@@ -89,10 +88,6 @@ export class ViewerIns {
 		this.gridView.removeGridView();
 	}
 
-	// public onClickActionView(action) {
-	//     this.viewer.setActiveDragger(action);
-	// }
-
 	public initAllEvents() {
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_DOWN, ev => {
 			this.visViewer.setEnableAutoSelect(false);
@@ -100,8 +95,7 @@ export class ViewerIns {
 			const y = ev.offsetY * window.devicePixelRatio;
 			let pointOxy = this.pointOnOxyPlane(ev);
 			const pointWorld = this.pointWorldFromMouseEv(ev);
-			this.gridView.onMouseUp(ev, pointOxy);
-			// const snap = this.visViewer.getSnapPoint(x, y, 5);
+			this.gridView.onMouseUp();
 			if (this.gridView.haveSnapPoint()) {
 				pointOxy = this.gridView.getSnapPoint();
 			}
@@ -111,7 +105,6 @@ export class ViewerIns {
 				CmdFactory.getIns().currentCmd.cmdName == CMD_NAME.SELECT &&
 				CmdFactory.getIns().currentCmd.fisrtPointXY != null
 			) {
-				//FINISH SINGLE SELECTION
 				this.fireSubcribeEvent(VIEWER_EVENT.MOUSE_DOWN, ev, pointOxy, pointWorld);
 
 				const firstPoint = CmdFactory.getIns().currentCmd.fisrtPointXY;
@@ -129,9 +122,7 @@ export class ViewerIns {
 						CmdFactory.getIns().currentCmd.setSelectionSet(selectionSet);
 					} else if (CmdFactory.getIns().currentCmd.cmdName == CMD_NAME.SELECT) {
 						CmdFactory.getIns().currentCmd.setSelectionSet(selectionSet);
-						// CmdFactory.getIns().currentCmd.setStopSelection(true);
 						this.fireSubcribeEvent(VIEWER_EVENT.MOUSE_DOWN, ev, pointOxy, pointWorld);
-						// CmdFactory.getIns().currentCmd.setStopSelection(false);
 					} else {
 						this.fireSubcribeEvent(VIEWER_EVENT.MOUSE_DOWN, ev, pointOxy, pointWorld);
 					}
@@ -157,7 +148,7 @@ export class ViewerIns {
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_UP, ev => {
 			let pointOxy = this.pointOnOxyPlane(ev);
 			const pointWorld = this.pointWorldFromMouseEv(ev);
-			this.gridView.onMouseUp(ev, pointOxy);
+			this.gridView.onMouseUp();
 			if (this.gridView.haveSnapPoint()) {
 				pointOxy = this.gridView.getSnapPoint();
 			}
@@ -181,18 +172,8 @@ export class ViewerIns {
 			this.fireSubcribeEvent(VIEWER_EVENT.ZOOM_CHANGED, ev, ev.data);
 		});
 
-		this.viewer.addEventListener("select", ev => {});
-
-		this.viewer.addEventListener("resize", ev => {
-			this.gridView.updateGridView();
-		});
-
-		this.viewer.addEventListener("wheel", ev => {
-			this.gridView.updateGridView();
-		});
-
 		document.onkeydown = ev => {
-			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.keyCode);
+			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.key);
 		};
 	}
 
@@ -303,8 +284,8 @@ export class ViewerIns {
 
 		this.visViewer.activeView.renderMode = this.visLib.RenderMode.GouraudShadedWithWireframe;
 		this.visViewer.setBackgroundColor([33, 41, 48]);
-		this.visViewer.setEnableWCS(true);
-		// this.visViewer.lineSmoothing = true;
+		//this.visViewer.setEnableWCS(true);
+		this.visViewer.lineSmoothing = true;
 		this.visViewer.vertexSnapping = true;
 		this.visViewer.edgeSnapping = false;
 		this.visViewer.setEnableAnimation(false);
@@ -333,21 +314,9 @@ export class ViewerIns {
 		const extendView = this.visViewer.getActiveTvExtendedView();
 		extendView.setAnimationDuration(0.5);
 
-		// const ev = {
-		// 	offsetX: 0,
-		// 	offsetY: 0,
-		// };
-		// const minPoint = this.pointOnOxyPlane(ev);
-		// ev.offsetX = this.canvas.width;
-		// ev.offsetY = this.canvas.height;
-		// const maxPoint = this.pointOnOxyPlane(ev);
-
 		this.visViewer.setEnableAnimation(true);
 		this.visViewer.setDefaultViewPositionWithAnimation(this.viewPosition[positionType]);
 		this.visViewer.setEnableAnimation(false);
-		// this.visViewer.clearViewExtentsCache();
-		// this.visViewer.zoomExtents(minPoint, maxPoint);
-
 		setTimeout(() => {
 			this.visViewer.zoomAt(100, this.canvas.width / 2, this.canvas.height / 2);
 			this.visViewer.regenAll();

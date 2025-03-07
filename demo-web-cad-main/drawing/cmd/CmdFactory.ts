@@ -5,7 +5,6 @@ import { CircleCmd } from "./entity/CircleCmd";
 import { EllipseCmd } from "./entity/EllipseCmd";
 import { PolylineCmd } from "./entity/PolylineCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
-import { TextCmd } from "./entity/TextCmd";
 import { EntityCmd } from "./EntityCmd";
 import { ICmdEvent } from "./interface/ICmdEvent";
 import { OrbitCmd } from "./OrbitCmd";
@@ -63,9 +62,6 @@ export class CmdFactory implements ICmdEvent {
 				break;
 			case CMD_NAME.PAN:
 				this.currentCmd = new PanCmd(cmdName);
-				break;
-			case CMD_NAME.TEXT:
-				this.currentCmd = new TextCmd(cmdName);
 				break;
 			case CMD_NAME.ORBIT:
 				this.currentCmd = new OrbitCmd(cmdName);
