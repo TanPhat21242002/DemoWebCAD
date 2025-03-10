@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-empty */
 import { ACTION_ENTITY, ACTION_MODIFY, CMD_NAME, ENTITY_NAME } from "../config";
 import { ViewerIns } from "../viewer";
 import { EntityCmd } from "./EntityCmd";

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { CADSetting } from "../drawing/setting";
 import "./model-setting.css";
 import { ViewerIns } from "../drawing/viewer";
 import { CmdFactory } from "../drawing/cmd/CmdFactory";
@@ -17,6 +16,7 @@ export default function ModelSetting({ modelData, onChangeModel }) {
 		if (modelData && modelData["models"] && modelData["models"].length > 0) {
 			const defaultModel = modelData["models"][0].name.toLowerCase();
 			setModelName(defaultModel);
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 			nameModel = null;
 			onSettingChange(null, defaultModel);
 		}

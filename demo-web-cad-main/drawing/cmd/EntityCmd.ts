@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IEntityAction } from "./interface/IEntityAction";
 import { IBaseCmd } from "./interface/IBaseCmd";
 import { IEntityProp } from "./interface/IEntityProp";

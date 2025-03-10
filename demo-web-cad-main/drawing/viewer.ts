@@ -1,7 +1,6 @@
-import { AppConfig, CMD_NAME, DrawingConfig, ENTITY_NAME } from "./config";
+import { AppConfig, CMD_NAME } from "./config";
 import { GridView } from "./viewer/GridView";
 import { CmdFactory } from "./cmd/CmdFactory";
-import { SelectCmd } from "./cmd/SelectCmd";
 import { Viewer } from "@inweb/viewer-visualize";
 
 export const VIEWER_EVENT = {
@@ -10,6 +9,7 @@ export const VIEWER_EVENT = {
 	MOUSE_MOVE: "mousemove",
 	KEY_PRESS: "keypress",
 	ZOOM_CHANGED: "zoom",
+	CONTEXT_MENU: "contextmenu",
 };
 
 export class ViewerIns {
@@ -21,7 +21,6 @@ export class ViewerIns {
 
 	public gridView: GridView = null;
 	private events = {};
-	// private draggerName = "Pan";
 
 	public viewPosition = [];
 
@@ -50,10 +49,8 @@ export class ViewerIns {
 		this.instance.canvas = canvas;
 
 		this.instance.visViewer.createLocalDatabase();
-		this.instance.visViewer.zoomAt(0.1, canvas.width / 2, canvas.height / 2);
 
 		this.instance.gridView = new GridView(canvas);
-		this.instance.setViewerDefault();
 		this.instance.initAllEvents();
 
 		{
@@ -78,6 +75,9 @@ export class ViewerIns {
 
 		this.instance.gridView.enableCanSnap(true);
 		this.instance.createGridView();
+
+		this.instance.setViewerDefault();
+		this.instance.visViewer.zoomAt(300, canvas.width / 2, canvas.height / 2);
 	}
 
 	public createGridView() {
@@ -90,6 +90,11 @@ export class ViewerIns {
 
 	public initAllEvents() {
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_DOWN, ev => {
+			if (ev.button === 2) {
+				this.startPan(ev);
+				return;
+			}
+
 			this.visViewer.setEnableAutoSelect(false);
 			const x = ev.offsetX * window.devicePixelRatio;
 			const y = ev.offsetY * window.devicePixelRatio;
@@ -146,6 +151,11 @@ export class ViewerIns {
 		});
 
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_UP, ev => {
+			if (ev.button === 2) {
+				this.stopPan();
+				return;
+			}
+
 			let pointOxy = this.pointOnOxyPlane(ev);
 			const pointWorld = this.pointWorldFromMouseEv(ev);
 			this.gridView.onMouseUp();
@@ -156,8 +166,6 @@ export class ViewerIns {
 		});
 
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_MOVE, ev => {
-			this.gridView.updateGridView();
-
 			let pointOxy = this.pointOnOxyPlane(ev);
 			const pointWorld = this.pointWorldFromMouseEv(ev);
 			this.gridView.onMouseMove(ev, pointOxy);
@@ -168,8 +176,11 @@ export class ViewerIns {
 		});
 
 		this.viewer.addEventListener(VIEWER_EVENT.ZOOM_CHANGED, ev => {
-			this.gridView.updateGridView();
 			this.fireSubcribeEvent(VIEWER_EVENT.ZOOM_CHANGED, ev, ev.data);
+		});
+
+		this.viewer.addEventListener(VIEWER_EVENT.CONTEXT_MENU, ev => {
+			ev.preventDefault();
 		});
 
 		document.onkeydown = ev => {
@@ -177,13 +188,38 @@ export class ViewerIns {
 		};
 	}
 
-	public checkEmptySelection() {
-		try {
-			const selectionSet = this.visViewer.getSelected();
-			return selectionSet.numItems() == 0;
-		} catch {
-			return true;
-		}
+	private startPan(ev) {
+		let startX = ev.clientX;
+		let startY = ev.clientY;
+		let isPanning = true;
+
+		this.canvas.style.curor = "grabbing";
+
+		const onMouseMove = moveEvent => {
+			if (!isPanning) return;
+
+			const dx = moveEvent.clientX - startX;
+			const dy = moveEvent.clientY - startY;
+
+			this.visViewer.pan(dx, dy);
+
+			startX = moveEvent.clientX;
+			startY = moveEvent.clientY;
+		};
+
+		const onMouseUp = () => {
+			isPanning = false;
+			document.removeEventListener("mousemove", onMouseMove);
+			document.removeEventListener("mouseup", onMouseUp);
+			this.canvas.style.cursor = "default";
+		};
+
+		document.addEventListener("mousemove", onMouseMove);
+		document.addEventListener("mouseup", onMouseUp);
+	}
+
+	private stopPan() {
+		this.canvas.style.cursor = "default";
 	}
 
 	public deleteSelected() {
@@ -195,6 +231,7 @@ export class ViewerIns {
 				const entityId = interators.getEntity();
 				model.removeEntity(entityId);
 			}
+			// eslint-disable-next-line no-empty, @typescript-eslint/no-unused-vars
 		} catch (error) {}
 	}
 
@@ -239,26 +276,11 @@ export class ViewerIns {
 		return [xx, yy, zz];
 	}
 
-	public createPoint3DFromArray(point3) {
-		return new this.visLib.Point3d.createFromArray(point3);
-	}
-
-	public createVector3DFromArray(vector3) {
-		return new this.visLib.Vector3d.createFromArray(vector3);
-	}
-
 	public getTypeOfEntity(entity) {
-		// const numGeometry = entity.getNumGeometries(true, false);
-		// if (numGeometry > 1) {
-		//     return [1000, null];
-		// }
-
 		const tmpInterators = entity.getGeometryDataIterator();
 		for (; !tmpInterators.done(); tmpInterators.step()) {
 			const geometryDataId = tmpInterators.getGeometryData();
 			if (geometryDataId.getTypeEnum() == this.visLib.OdTvGeometryDataType.kSubEntity) {
-				// const subEntity = geometryDataId.openAsSubEntity();
-				// return this.getTypeOfEntity(subEntity);
 				return [1000, null];
 			} else {
 				return [geometryDataId.getTypeEnum(), geometryDataId];
@@ -284,7 +306,6 @@ export class ViewerIns {
 
 		this.visViewer.activeView.renderMode = this.visLib.RenderMode.GouraudShadedWithWireframe;
 		this.visViewer.setBackgroundColor([33, 41, 48]);
-		//this.visViewer.setEnableWCS(true);
 		this.visViewer.lineSmoothing = true;
 		this.visViewer.vertexSnapping = true;
 		this.visViewer.edgeSnapping = false;
@@ -297,31 +318,5 @@ export class ViewerIns {
 		const responce = await fetch(url, { method: "GET" });
 		const arrayBuffer = await responce.arrayBuffer();
 		return arrayBuffer;
-	}
-
-	public async parseFileBuffer(buffer) {
-		this.visViewer.getActiveModel().clearEntities();
-		this.removeGridView();
-		this.visViewer.parseVsfx(buffer);
-		this.visViewer.zoomAt(100, this.canvas.width / 2, this.canvas.height / 2);
-		this.visViewer.regenAll();
-		this.visViewer.zoomExtents();
-		this.setViewerDefault();
-		this.createGridView();
-	}
-
-	public setPositonView(positionType) {
-		const extendView = this.visViewer.getActiveTvExtendedView();
-		extendView.setAnimationDuration(0.5);
-
-		this.visViewer.setEnableAnimation(true);
-		this.visViewer.setDefaultViewPositionWithAnimation(this.viewPosition[positionType]);
-		this.visViewer.setEnableAnimation(false);
-		setTimeout(() => {
-			this.visViewer.zoomAt(100, this.canvas.width / 2, this.canvas.height / 2);
-			this.visViewer.regenAll();
-			this.visViewer.zoomExtents();
-			this.gridView.updateGridView();
-		}, 600);
 	}
 }

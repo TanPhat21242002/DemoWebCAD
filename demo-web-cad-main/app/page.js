@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useRef, useState } from "react";
 import LoadingView from "../components/loading-view";
@@ -8,16 +9,28 @@ import PropertiesInfor from "../components/properties-infor";
 import { DrawingUtil } from "../drawing/util/DrawingUtil";
 import ViewPosition from "../components/view-position";
 import SidePanel from "../components/side-panel";
+import Modal from "../components/modal";
+import FloorButtons from "../components/floor-button";
 
 export default function Home() {
 	const canvasRef = useRef();
 	const [showLoading, setShowLoading] = useState(true);
+	const [showModal, setShowModal] = useState(true);
+	const [disableUI, setDisableUI] = useState(true);
 	const [, setShowAction] = useState(false);
 	const [, setViewerRender] = useState(false);
 	const [propertiesInfor, setPropertiesInfor] = useState({});
+	const [currentFloor, setCurrentFloor] = useState("1F");
 
 	const onClickActionCmd = command => {
+		if (disableUI) return;
 		alert("Command executed: " + command);
+	};
+
+	const handleSelect = selection => {
+		console.log("User selected:", selection);
+		setShowModal(false);
+		setDisableUI(false);
 	};
 
 	function renderViewer() {
@@ -36,7 +49,6 @@ export default function Home() {
 			setViewerRender(true);
 		}
 		initClientViewer();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	function initAllEvent() {
@@ -62,17 +74,24 @@ export default function Home() {
 	};
 
 	const onClickViewPosition = positionType => {
+		if (disableUI) return;
 		ViewerIns.getIns().setPositonView(positionType);
 	};
 
+	const handleFloorChange = floor => {
+		setCurrentFloor(floor);
+	};
+
 	return (
-		<div className="h-screen">
+		<div className={`h-screen ${showModal ? "disable-ui" : ""}`}>
 			<canvas ref={canvasRef} id="view" className="w-full h-full" />
 			<LoadingView isShow={showLoading} />
-			<CadSetting />
+			<CadSetting disable={disableUI} />
 			<PropertiesInfor properties={propertiesInfor} />
-			<ViewPosition onClickViewPosition={onClickViewPosition} isShow={!showLoading} />
-			<SidePanel onClickActionCmd={onClickActionCmd} isShow={true} />
+			<ViewPosition onClickViewPosition={onClickViewPosition} isShow={!showLoading} disable={disableUI} />
+			<SidePanel onClickActionCmd={onClickActionCmd} isShow={true} disable={disableUI} />
+			<Modal isOpen={showModal} onSelect={handleSelect} />
+			<FloorButtons currentFloor={currentFloor} onFloorChange={handleFloorChange} />
 		</div>
 	);
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 import { ViewerIns } from "../viewer";
 
 export class DrawingUtil {

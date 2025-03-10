@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DrawingConfig, ENTITY_NAME } from "../config";
 import { CADSetting } from "../setting";
 import { ViewerIns } from "../viewer";
@@ -67,7 +68,7 @@ export class GridView {
 				index = DrawingConfig.LINE_UNIT_ARR.length - 1;
 			}
 
-			this.lineUnit = DrawingConfig.LINE_UNIT_ARR[index];
+			this.lineUnit = DrawingConfig.LINE_UNIT_ARR[index] / 5;
 			this.lineNum = Math.round(viewSize / this.lineUnit);
 			if (!this.lineNum || !this.lineUnit) {
 				return;
@@ -105,11 +106,13 @@ export class GridView {
 			if (this.entityGridId != null) {
 				this.modelGrid.removeEntity(this.entityGridId);
 			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
 		} catch (error) {}
 		try {
 			if (this.entityPointId != null) {
 				this.modelGrid.removeEntity(this.entityPointId);
 			}
+			// eslint-disable-next-line no-empty
 		} catch (error) {}
 
 		this.entityGridId = null;
@@ -134,9 +137,15 @@ export class GridView {
 
 		this.entityGridId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
 		this.entityGrid = this.entityGridId.openObject();
-		this.entityGrid.setColor(120, 120, 120);
-		this.geometryGridDataId = this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum, this.lineNum, 0);
-		this.updateGridView();
+		this.entityGrid.setColor(180, 180, 180);
+		this.geometryGridDataId = this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum * 5, this.lineNum * 5, 0);
+
+		const bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
+		const bigGrid = bigGridEntityId.openObject();
+		bigGrid.setColor(100, 100, 100);
+		bigGrid.setLineWeight(2);
+
+		bigGrid.appendGrid([0, 0, 0], [this.lineUnit * 5, 0, 0], [0, this.lineUnit * 5, 0], this.lineNum, this.lineNum, 0);
 
 		var transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
 		transparencyDef.setValue(0.8);
@@ -146,21 +155,11 @@ export class GridView {
 		this.entityPoint = this.entityPointId.openObject();
 		this.entityPoint.setColor(125, 255, 0);
 
-		let pointCenterId = this.entityGrid.appendPointCloud([0, 0, 0]);
-		let pointCenterTmp = pointCenterId.openAsPointCloud();
-		pointCenterTmp.setPointSize(10);
-		pointCenterTmp.delete();
-		const pointCCCC = pointCenterId.openObject();
-		let color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 0, 0);
-		pointCCCC.setColor(color, ViewerIns.getIns().visLib.GeometryTypes.kAll);
-		var transparencyDefc = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
-		transparencyDefc.setValue(0.2);
-		pointCCCC.setTransparency(transparencyDefc);
-
 		let selectDef = new (ViewerIns.getIns().visLib.OdTvSelectabilityDef)();
 		selectDef.setEdges(false);
 		this.entityGrid.setSelectability(selectDef);
 	}
+
 	onMouseDown() {
 		this.deleteSnapPoint();
 	}
@@ -175,6 +174,7 @@ export class GridView {
 				this.entityPoint.removeGeometryData(this.pointId);
 				this.pointId = null;
 			}
+			// eslint-disable-next-line no-empty
 		} catch (error) {}
 	}
 
@@ -261,6 +261,7 @@ export class GridView {
 					this.snapZ = 0;
 				}
 			}
+			// eslint-disable-next-line no-empty
 		} catch (error) {}
 	}
 
