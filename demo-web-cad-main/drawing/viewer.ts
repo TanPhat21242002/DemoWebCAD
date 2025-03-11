@@ -183,9 +183,26 @@ export class ViewerIns {
 			ev.preventDefault();
 		});
 
+		this.viewer.addEventListener("wheel", ev => {
+			this.handleMouseWheel(ev);
+		});
+
 		document.onkeydown = ev => {
 			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.key);
 		};
+	}
+
+	private handleMouseWheel(ev: WheelEvent) {
+		ev.preventDefault();
+		const zoomFactor = 1.3;
+		const test = this.visViewer.activeView;
+		alert(test);
+		if (ev.deltaY < 0) {
+			this.visViewer.zoomAt(zoomFactor, this.canvas.width / 2, this.canvas.height / 2);
+		} else {
+			this.visViewer.zoomAt(1 / zoomFactor, this.canvas.width / 2, this.canvas.height / 2);
+		}
+		this.fireSubcribeEvent(VIEWER_EVENT.ZOOM_CHANGED, ev, zoomFactor);
 	}
 
 	private startPan(ev) {
