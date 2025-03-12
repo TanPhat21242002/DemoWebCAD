@@ -118,6 +118,7 @@ export class ViewerIns {
 				if (selectionSet.numItems() >= 1) {
 					CmdFactory.getIns().currentCmd.setSelectionSet(selectionSet);
 				}
+				//console.log(selectionSet.numItems());
 				CmdFactory.getIns().currentCmd.resetSelectCmd();
 			} else {
 				const selectionSet = this.visViewer.activeView.selectPoint([x, y], this.visViewer.getActiveModel());
@@ -188,20 +189,29 @@ export class ViewerIns {
 		});
 
 		document.onkeydown = ev => {
-			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.key);
+			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.keyCode);
 		};
 	}
 
 	private handleMouseWheel(ev: WheelEvent) {
 		ev.preventDefault();
 		const zoomFactor = 1.3;
-		const test = this.visViewer.activeView;
-		alert(test);
+		const minZoom = 50;
+		const maxZoom = 1500;
+		const viewWidth = this.visViewer.activeView.viewFieldWidth;
+
+		if (ev.deltaY < 0 && viewWidth <= minZoom) {
+			return;
+		} else if (ev.deltaY > 0 && viewWidth >= maxZoom) {
+			return;
+		}
+
 		if (ev.deltaY < 0) {
 			this.visViewer.zoomAt(zoomFactor, this.canvas.width / 2, this.canvas.height / 2);
 		} else {
 			this.visViewer.zoomAt(1 / zoomFactor, this.canvas.width / 2, this.canvas.height / 2);
 		}
+
 		this.fireSubcribeEvent(VIEWER_EVENT.ZOOM_CHANGED, ev, zoomFactor);
 	}
 
@@ -274,6 +284,14 @@ export class ViewerIns {
 		this.events[type].forEach(fn => {
 			fn(ev, value01, value02);
 		});
+	}
+
+	public createPoint3DFromArray(point3) {
+		return new this.visLib.Point3d.createFromArray(point3);
+	}
+
+	public createVector3DFromArray(vector3) {
+		return new this.visLib.Vector3d.createFromArray(vector3);
 	}
 
 	public pointWorldFromMouseEv(ev) {

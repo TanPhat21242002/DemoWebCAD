@@ -1,9 +1,13 @@
+"use client";
+
 import { useState } from "react";
 import "./side-panel.css";
+import { CMD_NAME } from "../drawing/config";
 
 export default function SidePanel({ onClickActionCmd, isShow }) {
 	const [showRoomPanel, setShowRoomPanel] = useState(false);
-	const [activeButton, setActiveButton] = useState(null);
+	const [activeButton, setActiveButton] = useState("drag");
+	const [pressedRoomOption, setPressedRoomOption] = useState(null);
 
 	const handleRoomClick = () => {
 		setShowRoomPanel(!showRoomPanel);
@@ -11,6 +15,11 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 
 	const handleButtonClick = buttonType => {
 		setActiveButton(buttonType);
+	};
+
+	const handleRoomOptionClick = optionName => {
+		onClickActionCmd(CMD_NAME.RECTANGLE);
+		setPressedRoomOption(optionName);
 	};
 
 	const roomOptions = [
@@ -96,8 +105,8 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 						{roomOptions.map(option => (
 							<div
 								key={option.name}
-								className={`room-option ${option.disabled ? "disabled" : ""}`}
-								onClick={() => !option.disabled && onClickActionCmd(option.name)}
+								className={`room-option ${option.disabled ? "disabled" : ""} ${pressedRoomOption === option.name ? "pressed" : ""}`}
+								onClick={() => handleRoomOptionClick(option.name)}
 							>
 								{option.name}
 							</div>

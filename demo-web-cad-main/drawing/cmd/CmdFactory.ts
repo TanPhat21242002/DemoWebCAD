@@ -1,4 +1,5 @@
 import { CMD_NAME } from "../config";
+import { RectangleCmd } from "./entity/RectangleCmd";
 import { EntityCmd } from "./EntityCmd";
 import { ICmdEvent } from "./interface/ICmdEvent";
 import { SelectCmd } from "./SelectCmd";
@@ -33,6 +34,9 @@ export class CmdFactory implements ICmdEvent {
 		switch (cmdName) {
 			case CMD_NAME.OTHER:
 				this.currentCmd = new EntityCmd(cmdName, entityId, geometryDataId);
+				break;
+			case CMD_NAME.RECTANGLE:
+				this.currentCmd = new RectangleCmd(cmdName, entityId, geometryDataId);
 				break;
 			case CMD_NAME.SELECT:
 				this.currentCmd = new SelectCmd(cmdName, entityId, geometryDataId);

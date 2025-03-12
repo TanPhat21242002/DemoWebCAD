@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";

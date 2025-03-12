@@ -261,6 +261,7 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 	};
 
 	onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
+		alert(keyCode);
 		switch (keyCode) {
 			//ESC
 			case 27:
@@ -272,9 +273,9 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 				this.endCmd(true);
 				break;
 			//ENTER
-			// case 13:
-			//     this.endCmd(true);
-			//     break;
+			case 13:
+				this.endCmd(true);
+				break;
 		}
 	};
 

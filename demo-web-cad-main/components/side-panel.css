@@ -126,8 +126,15 @@
 }
 
 .room-option:hover {
-    background: #666;
+    background: white;
+    color: #444;
     font-weight: bold; 
+}
+
+.room-option.pressed {
+    background: white;
+    color: #444;
+    font-weight: bold;
 }
 
 .side-item.active {

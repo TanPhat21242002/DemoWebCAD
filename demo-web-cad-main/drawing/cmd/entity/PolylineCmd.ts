@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";
@@ -13,6 +14,9 @@ export class PolylineCmd extends EntityCmd {
 	override onMouseDown = (ev: MouseEvent, point: any, pointWorld: any) => {
 		if (this.modeEntity == ACTION_ENTITY.CREATE) {
 			this.initForCreate(point);
+			if (this.polylinePoints.length > 2 && this.isClosedPolyline) {
+				this.endCmd(true);
+			}
 		} else if (this.modeEntity == ACTION_ENTITY.MODIFY) {
 			this.initForModify(point);
 		}
@@ -177,6 +181,7 @@ export class PolylineCmd extends EntityCmd {
 	}
 
 	override onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
+		alert(keyCode);
 		switch (keyCode) {
 			//ESC
 			case 27:
@@ -199,9 +204,9 @@ export class PolylineCmd extends EntityCmd {
 				this.endCmd(true);
 				break;
 			//ENTER
-			// case 13:
-			//     this.endCmd(true);
-			//     break;
+			case 13:
+				this.endCmd(true);
+				break;
 		}
 	};
 
