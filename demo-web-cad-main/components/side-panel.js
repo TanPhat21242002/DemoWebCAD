@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./side-panel.css";
 import { CMD_NAME } from "../drawing/config";
+import { CmdFactory } from "../drawing/cmd/CmdFactory";
 
 export default function SidePanel({ onClickActionCmd, isShow }) {
 	const [showRoomPanel, setShowRoomPanel] = useState(false);
 	const [activeButton, setActiveButton] = useState("drag");
 	const [pressedRoomOption, setPressedRoomOption] = useState(null);
+	const [isRectangleCmdActive, setIsRectangleCmdActive] = useState(false);
 
 	const handleRoomClick = () => {
 		setShowRoomPanel(!showRoomPanel);
@@ -18,9 +20,37 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 	};
 
 	const handleRoomOptionClick = optionName => {
+		if (CmdFactory.getIns().isSelectCmdActive) {
+			const currentCmd = CmdFactory.getIns().currentCmd;
+			if (currentCmd) {
+				currentCmd.cancelCmd(true);
+				for (let index = 0; index < currentCmd.selectionCmd.length; index++) {
+					const cmd = currentCmd.selectionCmd[index];
+					cmd.cancelCmd(true);
+				}
+				if (currentCmd.onCmdData != null) {
+					currentCmd.onCmdData(null);
+				}
+			}
+		}
+
 		onClickActionCmd(CMD_NAME.RECTANGLE);
 		setPressedRoomOption(optionName);
+		setIsRectangleCmdActive(true);
 	};
+
+	useEffect(() => {
+		if (isRectangleCmdActive) {
+			const handleCmdEnd = () => {
+				setPressedRoomOption(null);
+				setIsRectangleCmdActive(false);
+			};
+			CmdFactory.getIns().onCmdEnd = handleCmdEnd;
+			return () => {
+				CmdFactory.getIns().onCmdEnd = null;
+			};
+		}
+	}, [isRectangleCmdActive]);
 
 	const roomOptions = [
 		{ name: "Bedroom", disabled: false },

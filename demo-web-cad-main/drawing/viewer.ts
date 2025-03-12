@@ -118,7 +118,6 @@ export class ViewerIns {
 				if (selectionSet.numItems() >= 1) {
 					CmdFactory.getIns().currentCmd.setSelectionSet(selectionSet);
 				}
-				//console.log(selectionSet.numItems());
 				CmdFactory.getIns().currentCmd.resetSelectCmd();
 			} else {
 				const selectionSet = this.visViewer.activeView.selectPoint([x, y], this.visViewer.getActiveModel());

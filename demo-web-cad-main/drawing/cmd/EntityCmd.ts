@@ -261,7 +261,6 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 	};
 
 	onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
-		alert(keyCode);
 		switch (keyCode) {
 			//ESC
 			case 27:

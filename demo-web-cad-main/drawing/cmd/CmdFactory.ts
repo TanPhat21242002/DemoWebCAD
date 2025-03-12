@@ -7,6 +7,7 @@ import { SelectCmd } from "./SelectCmd";
 export class CmdFactory implements ICmdEvent {
 	private static instance = null;
 	public currentCmd = null;
+	public isSelectCmdActive = false;
 
 	private constructor() {}
 
@@ -40,6 +41,7 @@ export class CmdFactory implements ICmdEvent {
 				break;
 			case CMD_NAME.SELECT:
 				this.currentCmd = new SelectCmd(cmdName, entityId, geometryDataId);
+				this.isSelectCmdActive = true; // Đặt trạng thái của SelectCmd là active
 				break;
 		}
 
@@ -58,6 +60,9 @@ export class CmdFactory implements ICmdEvent {
 
 			this.currentCmd.onCmdEnd = () => {
 				this.currentCmd = null;
+				if (cmdName === CMD_NAME.SELECT) {
+					this.isSelectCmdActive = false; // Đặt trạng thái của SelectCmd là inactive
+				}
 				this.onCmdEnd?.();
 			};
 
