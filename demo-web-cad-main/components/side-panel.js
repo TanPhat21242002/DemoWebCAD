@@ -34,9 +34,21 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 			}
 		}
 
-		onClickActionCmd(CMD_NAME.RECTANGLE);
+		switch (optionName) {
+			case "Bedroom":
+				onClickActionCmd(CMD_NAME.RECTANGLE);
+				setIsRectangleCmdActive(true);
+				break;
+			case "Washitu":
+				onClickActionCmd(CMD_NAME.HATCH);
+				setIsRectangleCmdActive(true);
+				break;
+			default:
+				setIsRectangleCmdActive(true);
+				break;
+		}
+
 		setPressedRoomOption(optionName);
-		setIsRectangleCmdActive(true);
 	};
 
 	useEffect(() => {

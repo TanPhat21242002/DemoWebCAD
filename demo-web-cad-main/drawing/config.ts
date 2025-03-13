@@ -36,6 +36,7 @@ export const CMD_NAME = {
 	TEXT: "TEXT",
 	ORBIT: "ORBIT",
 	BOX: "BOX",
+	HATCH: "HATCH",
 };
 
 export const ACTION_ENTITY = {

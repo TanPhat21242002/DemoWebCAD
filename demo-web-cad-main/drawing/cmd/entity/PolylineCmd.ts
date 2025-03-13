@@ -181,6 +181,7 @@ export class PolylineCmd extends EntityCmd {
 	}
 
 	override onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
+		console.log("keyCode", keyCode);
 		switch (keyCode) {
 			//ESC
 			case 27:
