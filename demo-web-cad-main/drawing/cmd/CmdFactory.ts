@@ -28,7 +28,7 @@ export class CmdFactory implements ICmdEvent {
 	onCmdData: (data: any) => any;
 	onCmdEnd: () => any;
 
-	public createCmd(cmdName, entityId?, geometryDataId?) {
+	public createCmd(cmdName: string, entityId?: undefined, geometryDataId?: undefined) {
 		if (this.currentCmd != null) {
 			return;
 		}

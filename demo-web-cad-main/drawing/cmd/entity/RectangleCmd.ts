@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig } from "../../config";
+import { ACTION_ENTITY, ACTION_MODIFY } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";
 import { EntityCmd } from "../EntityCmd";
@@ -89,12 +89,14 @@ export class RectangleCmd extends PolylineCmd {
 	}
 
 	getRectangleData() {
-		return [
-			[this.startPoint[0], this.startPoint[1], this.startPoint[2]],
-			[this.startPoint[0], this.endPoint[1], this.endPoint[2]],
-			[this.endPoint[0], this.endPoint[1], this.endPoint[2]],
-			[this.endPoint[0], this.startPoint[1], this.startPoint[2]],
-		];
+		if (this.startPoint && this.endPoint) {
+			return [
+				[this.startPoint[0], this.startPoint[1], this.startPoint[2]],
+				[this.startPoint[0], this.endPoint[1], this.endPoint[2]],
+				[this.endPoint[0], this.endPoint[1], this.endPoint[2]],
+				[this.endPoint[0], this.startPoint[1], this.startPoint[2]],
+			];
+		}
 	}
 
 	protected geometryDataForType() {

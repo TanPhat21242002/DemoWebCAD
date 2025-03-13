@@ -9,7 +9,6 @@ export class GridView {
 
 	entityGridId = null;
 	entityGrid = null;
-	geometryGridDataId = null;
 
 	entityPointId = null;
 	entityPoint = null;
@@ -25,77 +24,11 @@ export class GridView {
 	lineUnit = 10;
 
 	bigGridEntityId = null;
+	bigGrid = null;
 
 	constructor(canvas) {
 		this.modelGrid = ViewerIns.getIns().visViewer.getOverlayModel();
 		this.canvas = canvas;
-	}
-
-	updateGridView() {
-		if (!CADSetting.getIns().isShowGrid()) {
-			return;
-		}
-
-		if (this.geometryGridDataId == null) {
-			return;
-		}
-
-		try {
-			const xx = this.canvas.width * window.devicePixelRatio;
-			const yy = this.canvas.height * window.devicePixelRatio;
-			const ev = {
-				offsetX: 0,
-				offsetY: 0,
-			};
-
-			const point01 = ViewerIns.getIns().pointOnOxyPlane(ev);
-			ev.offsetX = xx;
-			ev.offsetY = 0;
-			const point02 = ViewerIns.getIns().pointOnOxyPlane(ev);
-			ev.offsetX = xx;
-			ev.offsetY = yy;
-			const point03 = ViewerIns.getIns().pointOnOxyPlane(ev);
-			ev.offsetX = 0;
-			ev.offsetY = yy;
-			const point04 = ViewerIns.getIns().pointOnOxyPlane(ev);
-			ev.offsetX = xx / 2;
-			ev.offsetY = yy / 2;
-			const center = ViewerIns.getIns().pointOnOxyPlane(ev);
-
-			let unitx = Math.max(point01[0] - center[0], point02[0] - center[0], point03[0] - center[0], point04[0] - center[0]);
-			let unity = Math.max(point01[1] - center[1], point02[1] - center[1], point03[1] - center[1], point04[1] - center[1]);
-			const viewSize = Math.round(Math.max(unitx, unity)) * 2;
-			let index = DrawingConfig.LINE_UNIT_ARR.findIndex(item => viewSize / item < 50);
-			if (index < 0) {
-				index = DrawingConfig.LINE_UNIT_ARR.length - 1;
-			}
-
-			this.lineUnit = DrawingConfig.LINE_UNIT_ARR[index] / 5;
-			this.lineNum = Math.round(viewSize / this.lineUnit);
-			if (!this.lineNum || !this.lineUnit) {
-				return;
-			}
-			if (this.lineNum > DrawingConfig.MAX_LINE_NUM) {
-				this.lineNum = DrawingConfig.MAX_LINE_NUM;
-			}
-
-			center[0] = center[0] - viewSize / 2;
-			center[1] = center[1] - viewSize / 2;
-			center[0] = Math.round(center[0] / this.lineUnit) * this.lineUnit;
-			center[1] = Math.round(center[1] / this.lineUnit) * this.lineUnit;
-
-			const gridData = this.geometryGridDataId.openAsGrid();
-			gridData.set(
-				center,
-				[center[0] + this.lineUnit, center[1], center[2]],
-				[center[0], center[1] + this.lineUnit, center[2]],
-				this.lineNum,
-				this.lineNum,
-				0,
-			);
-		} catch (error) {
-			console.log(error);
-		}
 	}
 
 	removeGridView() {
@@ -149,18 +82,16 @@ export class GridView {
 		}
 
 		this.modelGrid = ViewerIns.getIns().visViewer.getOverlayModel();
-
 		this.entityGridId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
 		this.entityGrid = this.entityGridId.openObject();
 		this.entityGrid.setColor(180, 180, 180);
-		this.geometryGridDataId = this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum * 5, this.lineNum * 5, 0);
+		this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum * 5, this.lineNum * 5, 0);
 
-		this.bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY); // Sử dụng biến bigGridEntityId
-		const bigGrid = this.bigGridEntityId.openObject();
-		bigGrid.setColor(100, 100, 100);
-		bigGrid.setLineWeight(2);
-
-		bigGrid.appendGrid([0, 0, 0], [this.lineUnit * 5, 0, 0], [0, this.lineUnit * 5, 0], this.lineNum, this.lineNum, 0);
+		this.bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
+		this.bigGrid = this.bigGridEntityId.openObject();
+		this.bigGrid.setColor(100, 100, 100);
+		this.bigGrid.setLineWeight(2);
+		this.bigGrid.appendGrid([0, 0, 0], [this.lineUnit * 5, 0, 0], [0, this.lineUnit * 5, 0], this.lineNum, this.lineNum, 0);
 
 		var transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
 		transparencyDef.setValue(0.8);
@@ -173,6 +104,7 @@ export class GridView {
 		let selectDef = new (ViewerIns.getIns().visLib.OdTvSelectabilityDef)();
 		selectDef.setEdges(false);
 		this.entityGrid.setSelectability(selectDef);
+		this.bigGrid.setSelectability(selectDef);
 	}
 
 	onMouseDown() {
