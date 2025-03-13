@@ -24,6 +24,8 @@ export class GridView {
 	lineNum = 1000;
 	lineUnit = 10;
 
+	bigGridEntityId = null;
+
 	constructor(canvas) {
 		this.modelGrid = ViewerIns.getIns().visViewer.getOverlayModel();
 		this.canvas = canvas;
@@ -102,21 +104,34 @@ export class GridView {
 		}
 
 		this.modelGrid = ViewerIns.getIns().visViewer.getOverlayModel();
+
 		try {
-			if (this.entityGridId != null) {
+			if (this.entityGridId !== null) {
 				this.modelGrid.removeEntity(this.entityGridId);
 			}
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-		} catch (error) {}
+		} catch (error) {
+			console.error("Error removing entityGrid:", error);
+		}
+
 		try {
-			if (this.entityPointId != null) {
+			if (this.entityPointId !== null) {
 				this.modelGrid.removeEntity(this.entityPointId);
 			}
-			// eslint-disable-next-line no-empty
-		} catch (error) {}
+		} catch (error) {
+			console.error("Error removing entityPoint:", error);
+		}
+
+		try {
+			if (this.bigGridEntityId !== null) {
+				this.modelGrid.removeEntity(this.bigGridEntityId);
+			}
+		} catch (error) {
+			console.error("Error removing bigGrid:", error);
+		}
 
 		this.entityGridId = null;
 		this.entityPointId = null;
+		this.bigGridEntityId = null;
 		this.geometryGridDataId = null;
 	}
 
@@ -140,8 +155,8 @@ export class GridView {
 		this.entityGrid.setColor(180, 180, 180);
 		this.geometryGridDataId = this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum * 5, this.lineNum * 5, 0);
 
-		const bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
-		const bigGrid = bigGridEntityId.openObject();
+		this.bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY); // Sử dụng biến bigGridEntityId
+		const bigGrid = this.bigGridEntityId.openObject();
 		bigGrid.setColor(100, 100, 100);
 		bigGrid.setLineWeight(2);
 

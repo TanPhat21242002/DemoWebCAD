@@ -272,9 +272,9 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 				this.endCmd(true);
 				break;
 			//ENTER
-			// case 13:
-			//     this.endCmd(true);
-			//     break;
+			case 13:
+				this.endCmd(true);
+				break;
 		}
 	};
 

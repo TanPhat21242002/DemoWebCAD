@@ -1,9 +1,15 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import "./side-panel.css";
+import { CMD_NAME } from "../drawing/config";
+import { CmdFactory } from "../drawing/cmd/CmdFactory";
 
 export default function SidePanel({ onClickActionCmd, isShow }) {
 	const [showRoomPanel, setShowRoomPanel] = useState(false);
-	const [activeButton, setActiveButton] = useState(null);
+	const [activeButton, setActiveButton] = useState("drag");
+	const [pressedRoomOption, setPressedRoomOption] = useState(null);
+	const [isRectangleCmdActive, setIsRectangleCmdActive] = useState(false);
 
 	const handleRoomClick = () => {
 		setShowRoomPanel(!showRoomPanel);
@@ -12,6 +18,51 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 	const handleButtonClick = buttonType => {
 		setActiveButton(buttonType);
 	};
+
+	const handleRoomOptionClick = optionName => {
+		if (CmdFactory.getIns().isSelectCmdActive) {
+			const currentCmd = CmdFactory.getIns().currentCmd;
+			if (currentCmd) {
+				currentCmd.cancelCmd(true);
+				for (let index = 0; index < currentCmd.selectionCmd.length; index++) {
+					const cmd = currentCmd.selectionCmd[index];
+					cmd.cancelCmd(true);
+				}
+				if (currentCmd.onCmdData != null) {
+					currentCmd.onCmdData(null);
+				}
+			}
+		}
+
+		switch (optionName) {
+			case "Bedroom":
+				onClickActionCmd(CMD_NAME.RECTANGLE);
+				setIsRectangleCmdActive(true);
+				break;
+			case "Washitu":
+				onClickActionCmd(CMD_NAME.HATCH);
+				setIsRectangleCmdActive(true);
+				break;
+			default:
+				setIsRectangleCmdActive(true);
+				break;
+		}
+
+		setPressedRoomOption(optionName);
+	};
+
+	useEffect(() => {
+		if (isRectangleCmdActive) {
+			const handleCmdEnd = () => {
+				setPressedRoomOption(null);
+				setIsRectangleCmdActive(false);
+			};
+			CmdFactory.getIns().onCmdEnd = handleCmdEnd;
+			return () => {
+				CmdFactory.getIns().onCmdEnd = null;
+			};
+		}
+	}, [isRectangleCmdActive]);
 
 	const roomOptions = [
 		{ name: "Bedroom", disabled: false },
@@ -96,8 +147,8 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 						{roomOptions.map(option => (
 							<div
 								key={option.name}
-								className={`room-option ${option.disabled ? "disabled" : ""}`}
-								onClick={() => !option.disabled && onClickActionCmd(option.name)}
+								className={`room-option ${option.disabled ? "disabled" : ""} ${pressedRoomOption === option.name ? "pressed" : ""}`}
+								onClick={() => handleRoomOptionClick(option.name)}
 							>
 								{option.name}
 							</div>

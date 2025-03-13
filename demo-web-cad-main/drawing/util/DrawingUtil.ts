@@ -218,6 +218,13 @@ export class DrawingUtil {
 		return inside;
 	}
 
+	public static compareTwoPoints(point01, point02) {
+		const point3d01 = ViewerIns.getIns().createPoint3DFromArray(point01);
+		const point3d02 = ViewerIns.getIns().createPoint3DFromArray(point02);
+		const distanceTo = point3d01.distanceTo(point3d02);
+		return distanceTo < 0.2;
+	}
+
 	public static getPropertiesOfSelectionSet(selectionSet) {
 		let properties: any = {};
 		if (selectionSet == null) {

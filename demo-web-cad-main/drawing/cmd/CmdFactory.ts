@@ -1,11 +1,14 @@
 import { CMD_NAME } from "../config";
+import { RectangleCmd } from "./entity/RectangleCmd";
 import { EntityCmd } from "./EntityCmd";
 import { ICmdEvent } from "./interface/ICmdEvent";
 import { SelectCmd } from "./SelectCmd";
+import { HatchCmd } from "./entity/HatchCmd";
 
 export class CmdFactory implements ICmdEvent {
 	private static instance = null;
 	public currentCmd = null;
+	public isSelectCmdActive = false;
 
 	private constructor() {}
 
@@ -34,8 +37,15 @@ export class CmdFactory implements ICmdEvent {
 			case CMD_NAME.OTHER:
 				this.currentCmd = new EntityCmd(cmdName, entityId, geometryDataId);
 				break;
+			case CMD_NAME.RECTANGLE:
+				this.currentCmd = new RectangleCmd(cmdName, entityId, geometryDataId);
+				break;
 			case CMD_NAME.SELECT:
 				this.currentCmd = new SelectCmd(cmdName, entityId, geometryDataId);
+				this.isSelectCmdActive = true;
+				break;
+			case CMD_NAME.HATCH:
+				this.currentCmd = new HatchCmd(cmdName, entityId, geometryDataId);
 				break;
 		}
 
@@ -54,6 +64,9 @@ export class CmdFactory implements ICmdEvent {
 
 			this.currentCmd.onCmdEnd = () => {
 				this.currentCmd = null;
+				if (cmdName === CMD_NAME.SELECT) {
+					this.isSelectCmdActive = false;
+				}
 				this.onCmdEnd?.();
 			};
 

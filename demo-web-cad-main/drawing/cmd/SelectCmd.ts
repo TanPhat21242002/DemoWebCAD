@@ -19,7 +19,7 @@ export class SelectCmd extends RectangleCmd {
 	public fisrtPointXY = null;
 	public seccondPointXY = null;
 
-	constructor(cmdName: string, entityId?, geometryDataId?) {
+	constructor(cmdName: string, entityId?: any, geometryDataId?: any) {
 		super(cmdName, entityId, geometryDataId);
 	}
 
