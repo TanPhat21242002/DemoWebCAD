@@ -126,6 +126,17 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 		this.createConnectedLine(this.baseDownPoint, point);
 	}
 
+	static pasteEntity(entity: any, viewPosition: any) {
+		const model = ViewerIns.getIns().visViewer.getActiveModel();
+		const entityPtr = entity.openObject();
+
+		console.log("Geometry", entityPtr.get);
+		const newEntityId = model.appendEntity(ENTITY_NAME.MAIN_ENTITY);
+		const newEntity = newEntityId.openObject();
+
+		return newEntityId;
+	}
+
 	subcribeEvents() {
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_DOWN, this.onMouseDown);
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_UP, this.onMouseUp);

@@ -2,6 +2,7 @@ import { AppConfig, CMD_NAME } from "./config";
 import { GridView } from "./viewer/GridView";
 import { CmdFactory } from "./cmd/CmdFactory";
 import { Viewer } from "@inweb/viewer-visualize";
+import { EntityCmd } from "./cmd/EntityCmd";
 
 export const VIEWER_EVENT = {
 	MOUSE_DOWN: "mousedown",
@@ -21,6 +22,7 @@ export class ViewerIns {
 
 	public gridView: GridView = null;
 	private events = {};
+	private clipboard = null;
 
 	public viewPosition = [];
 
@@ -185,7 +187,34 @@ export class ViewerIns {
 
 		document.onkeydown = ev => {
 			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.keyCode);
+
+			if (ev.ctrlKey && ev.key === "c") {
+				this.copySelected();
+			}
+
+			if (ev.ctrlKey && ev.key === "v") {
+				this.pasteClipboard();
+			}
 		};
+	}
+
+	private copySelected() {
+		const selectionSet = this.visViewer.getSelected();
+		if (selectionSet.numItems() > 0) {
+			this.clipboard = selectionSet;
+		}
+	}
+
+	private pasteClipboard() {
+		if (this.clipboard) {
+			const iterator = this.clipboard.getIterator();
+			while (!iterator.done()) {
+				const entity = iterator.getEntity();
+				EntityCmd.pasteEntity(entity, this.visViewer.activeView.viewPosition);
+				iterator.step();
+			}
+			this.visViewer.setSelected(this.clipboard);
+		}
 	}
 
 	private startPan(ev) {
