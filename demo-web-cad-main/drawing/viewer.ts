@@ -210,7 +210,7 @@ export class ViewerIns {
 			const iterator = this.clipboard.getIterator();
 			while (!iterator.done()) {
 				const entity = iterator.getEntity();
-				EntityCmd.pasteEntity(entity, this.visViewer.activeView.viewPosition);
+				EntityCmd.pasteEntity(entity);
 				iterator.step();
 			}
 			this.visViewer.setSelected(this.clipboard);
