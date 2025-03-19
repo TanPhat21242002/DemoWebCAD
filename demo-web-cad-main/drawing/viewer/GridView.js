@@ -81,17 +81,19 @@ export class GridView {
 			return;
 		}
 
-		this.modelGrid = ViewerIns.getIns().visViewer.getOverlayModel();
+		this.modelGrid = ViewerIns.getIns().visViewer.getActiveModel();
 		this.entityGridId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
 		this.entityGrid = this.entityGridId.openObject();
 		this.entityGrid.setColor(180, 180, 180);
-		this.entityGrid.appendGrid([0, 0, 0], [this.lineUnit, 0, 0], [0, this.lineUnit, 0], this.lineNum * 5, this.lineNum * 5, 0);
+
+		const gridZ = -1000;
+		this.entityGrid.appendGrid([0, 0, gridZ], [this.lineUnit, 0, gridZ], [0, this.lineUnit, gridZ], this.lineNum * 5, this.lineNum * 5, 0);
 
 		this.bigGridEntityId = this.modelGrid.appendEntity(ENTITY_NAME.OVERLAY_ENTITY);
 		this.bigGrid = this.bigGridEntityId.openObject();
 		this.bigGrid.setColor(100, 100, 100);
 		this.bigGrid.setLineWeight(2);
-		this.bigGrid.appendGrid([0, 0, 0], [this.lineUnit * 5, 0, 0], [0, this.lineUnit * 5, 0], this.lineNum, this.lineNum, 0);
+		this.bigGrid.appendGrid([0, 0, gridZ], [this.lineUnit * 5, 0, gridZ], [0, this.lineUnit * 5, gridZ], this.lineNum, this.lineNum, 0);
 
 		var transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
 		transparencyDef.setValue(0.8);

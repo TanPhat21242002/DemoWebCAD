@@ -82,7 +82,7 @@ export class ViewerIns {
 		this.instance.createGridView();
 
 		this.instance.setViewerDefault();
-		this.instance.visViewer.zoomAt(300, canvas.width / 2, canvas.height / 2);
+		this.instance.visViewer.zoomAt(250, canvas.width / 2, canvas.height / 2);
 	}
 
 	public createGridView() {

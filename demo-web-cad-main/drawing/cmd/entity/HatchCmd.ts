@@ -3,6 +3,7 @@
 import { RectangleCmd } from "./RectangleCmd";
 import { ViewerIns } from "../../viewer";
 import { ACTION_ENTITY, TYPE_ROOM } from "../../config";
+import { DrawingUtil } from "../../util/DrawingUtil";
 
 export class HatchCmd extends RectangleCmd {
 	private polygonId = null;
@@ -19,8 +20,7 @@ export class HatchCmd extends RectangleCmd {
 		const model = ViewerIns.getIns().visViewer.getActiveModel();
 		this.entityId = model.appendEntity("Polyline");
 		this.entity = this.entityId.openObject();
-		//this.entity.setLineWeight(1);
-		this.entity.setColor(102, 102, 102);
+		this.entity.setColor(255, 255, 255);
 	}
 
 	override onMouseDown = (ev: MouseEvent, point: any) => {
@@ -34,6 +34,7 @@ export class HatchCmd extends RectangleCmd {
 			this.createFilledPolygon();
 			this.addText();
 			this.endCmd(true);
+			this.createWall();
 		}
 		ViewerIns.getIns().visViewer.update();
 	};
@@ -48,6 +49,27 @@ export class HatchCmd extends RectangleCmd {
 			this.updateFilledPolygon();
 		}
 	};
+
+	private createWall() {
+		if (!this.geometryData) return;
+
+		const polylineData = this.getRectangleData();
+		let data: number[] = [];
+
+		polylineData.forEach(item => {
+			data = data.concat(item);
+		});
+		if (data.length >= 6) {
+			data.push(data[0], data[1], data[2]);
+		}
+
+		const model = ViewerIns.getIns().visViewer.getActiveModel();
+		const entId = model.appendEntity("wall");
+		const ent = entId.openObject();
+		ent.setLineWeight(10);
+		ent.setColor(102, 102, 102);
+		ent.appendPolyline(data);
+	}
 
 	private createFilledPolygon() {
 		if (this.polygonId == null) {
@@ -90,10 +112,15 @@ export class HatchCmd extends RectangleCmd {
 			}
 			this.polygonId.openObject().setColor(color, ViewerIns.getIns().visLib.GeometryTypes.kAll);
 
-			const transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
-			transparencyDef.setValue(0.2);
-			this.polygonId.openObject().setTransparency(transparencyDef);
+			// const transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
+			// transparencyDef.setValue(0.2);
+			// this.polygonId.openObject().setTransparency(transparencyDef);
 		}
+	}
+
+	protected initOverlayData(): void {
+		const arrPoints = DrawingUtil.getAllPointCloudRec(this.geometryData);
+		super.drawOverlayEntity(arrPoints);
 	}
 
 	private updateFilledPolygon() {
@@ -112,7 +139,7 @@ export class HatchCmd extends RectangleCmd {
 		const textPosition = [centerX, centerY, 0];
 		const textSize = 1.5;
 
-		let textColor = { r: 0, g: 0, b: 0 };
+		let textColor: { r: any; g: any; b: any };
 		switch (this.roomType) {
 			case TYPE_ROOM.JStyleRoom:
 			case TYPE_ROOM.BatchRoom:
@@ -141,7 +168,7 @@ export class HatchCmd extends RectangleCmd {
 
 			if (textStyle) {
 				textStyle.setFileName("NotoSansJP.ttf");
-				textStyle.setFont("NotoSansJP.ttf", 0, 0, false, false);
+				textStyle.setFont("NotoSansJP.ttf", false, false, 0, 0);
 				textEntity.setTextStyle(textStyleId);
 				areaTextEntity.setTextStyle(textStyleId);
 			}
