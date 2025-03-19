@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import "./side-panel.css";
-import { CMD_NAME } from "../drawing/config";
+import { CMD_NAME, TYPE_ROOM } from "../drawing/config";
 import { CmdFactory } from "../drawing/cmd/CmdFactory";
 
 export default function SidePanel({ onClickActionCmd, isShow }) {
@@ -35,12 +35,32 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 		}
 
 		switch (optionName) {
-			case "Bedroom":
-				onClickActionCmd(CMD_NAME.RECTANGLE);
+			case "洋室":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.WStyleRoom);
 				setIsRectangleCmdActive(true);
 				break;
-			case "Washitu":
-				onClickActionCmd(CMD_NAME.HATCH);
+			case "和室":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.JStyleRoom);
+				setIsRectangleCmdActive(true);
+				break;
+			case "玄関":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Entrance);
+				setIsRectangleCmdActive(true);
+				break;
+			case "LDK":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.LDK);
+				setIsRectangleCmdActive(true);
+				break;
+			case "浴室":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.BatchRoom);
+				setIsRectangleCmdActive(true);
+				break;
+			case "トイレ":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Toilet);
+				setIsRectangleCmdActive(true);
+				break;
+			case "廊下":
+				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Corridor);
 				setIsRectangleCmdActive(true);
 				break;
 			default:
@@ -65,9 +85,9 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 	}, [isRectangleCmdActive]);
 
 	const roomOptions = [
-		{ name: "Bedroom", disabled: false },
-		{ name: "Washitu", disabled: false },
-		{ name: "Entrance", disabled: false },
+		{ name: "洋室", disabled: false },
+		{ name: "和室", disabled: false },
+		{ name: "玄関", disabled: false },
 		{ name: "Porch", disabled: false },
 		{ name: "Garage", disabled: false },
 		{ name: "Living", disabled: false },
@@ -75,10 +95,10 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 		{ name: "Kitchen", disabled: false },
 		{ name: "LD", disabled: false },
 		{ name: "LDK", disabled: false },
-		{ name: "Bath", disabled: false },
-		{ name: "Toilet", disabled: false },
+		{ name: "浴室", disabled: false },
+		{ name: "トイレ", disabled: false },
 		{ name: "Restroom", disabled: false },
-		{ name: "Hallway", disabled: false },
+		{ name: "廊下", disabled: false },
 		{ name: "Balcony", disabled: true },
 		{ name: "Tokonoma", disabled: false },
 		{ name: "Hiroen", disabled: false },

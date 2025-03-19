@@ -2,20 +2,26 @@
 /* eslint-disable no-empty */
 import { RectangleCmd } from "./RectangleCmd";
 import { ViewerIns } from "../../viewer";
-import { ACTION_ENTITY } from "../../config";
+import { ACTION_ENTITY, TYPE_ROOM } from "../../config";
 
 export class HatchCmd extends RectangleCmd {
 	private polygonId = null;
 	private polygon = null;
 	private textId = null;
+	private roomType?: string;
+
+	constructor(cmdName: string, entityId?: string, geometryDataId?: string, roomType?: string) {
+		super(cmdName, entityId, geometryDataId);
+		this.roomType = roomType;
+	}
 
 	override add() {
 		this.modeEntity = ACTION_ENTITY.CREATE;
 		const model = ViewerIns.getIns().visViewer.getActiveModel();
 		this.entityId = model.appendEntity("Polyline");
 		this.entity = this.entityId.openObject();
-		this.entity.setLineWeight(2);
-		this.entity.setColor(254, 0, 0);
+		this.entity.setLineWeight(1);
+		this.entity.setColor(102, 102, 102);
 	}
 
 	override onMouseDown = (ev: MouseEvent, point: any) => {
@@ -55,7 +61,33 @@ export class HatchCmd extends RectangleCmd {
 			this.polygon = this.polygonId.openAsPolygon();
 			this.polygon.setFilled(true);
 
-			const color = new (ViewerIns.getIns().visLib.OdTvColorDef)(254, 251, 241);
+			let color: any;
+			switch (this.roomType) {
+				case TYPE_ROOM.WStyleRoom:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
+					break;
+				case TYPE_ROOM.JStyleRoom:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+					break;
+				case TYPE_ROOM.Entrance:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(226, 226, 226);
+					break;
+				case TYPE_ROOM.LDK:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
+					break;
+				case TYPE_ROOM.BatchRoom:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+					break;
+				case TYPE_ROOM.Toilet:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+					break;
+				case TYPE_ROOM.Corridor:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 227, 158);
+					break;
+				default:
+					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(254, 0, 0);
+					break;
+			}
 			this.polygonId.openObject().setColor(color, ViewerIns.getIns().visLib.GeometryTypes.kAll);
 
 			const transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
@@ -84,7 +116,7 @@ export class HatchCmd extends RectangleCmd {
 
 		const textStyle = ViewerIns.getIns().visViewer.createTextStyle("custom_style");
 		const textStylePtr = textStyle.openObject();
-		textStylePtr.setFont("arial.ttf", false, false, 0, 0);
+		//textStylePtr.setFont("arial.ttf", false, false, 0, 0);
 
 		textEntity.setTextStyle(textStyle);
 

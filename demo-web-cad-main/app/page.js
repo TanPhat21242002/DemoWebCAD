@@ -18,8 +18,8 @@ export default function Home() {
 	const [, setViewerRender] = useState(false);
 	const [currentFloor, setCurrentFloor] = useState("1F");
 
-	const onClickActionCmd = (cmd, entityId, geometryDataId) => {
-		CmdFactory.getIns().createCmd(cmd, entityId, geometryDataId);
+	const onClickActionCmd = (cmd, roomType, entityId, geometryDataId) => {
+		CmdFactory.getIns().createCmd(cmd, roomType, entityId, geometryDataId);
 	};
 
 	const handleSelect = selection => {
@@ -40,8 +40,8 @@ export default function Home() {
 			setShowLoading(false);
 			setShowAction(true);
 			renderViewer();
-			initAllEvent();
 			setViewerRender(true);
+			initAllEvent();
 		}
 		initClientViewer();
 	}, []);

@@ -126,41 +126,6 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 		this.createConnectedLine(this.baseDownPoint, point);
 	}
 
-	static pasteEntity(entity: any) {
-		const model = ViewerIns.getIns().visViewer.getActiveModel();
-		if (!model) {
-			console.error("Model not found!");
-			return null;
-		}
-
-		const cloneEntityId = model.appendEntity(ENTITY_NAME.CLONE_ENTITY);
-		const entityPtr = cloneEntityId.openObject();
-		entityPtr.copyTo(entity);
-
-		entityPtr.setColor(255, 0, 0);
-
-		const circleData = {
-			center: entity.getWCSExtents().center(),
-			radius: 100,
-			normal: [0, 0, 1],
-		};
-		entityPtr.appendCircleWithNormal(circleData.center, circleData.radius, circleData.normal);
-		console.log("entity.getWCSExtents", entityPtr);
-
-		ViewerIns.getIns().visViewer.update();
-	}
-
-	static getRectangleData(maxPoint: any, minPoint: any) {
-		if (maxPoint && minPoint) {
-			return [
-				[minPoint[0], minPoint[1], minPoint[2]],
-				[minPoint[0], maxPoint[1], maxPoint[2]],
-				[maxPoint[0], maxPoint[1], maxPoint[2]],
-				[maxPoint[0], minPoint[1], minPoint[2]],
-			];
-		}
-	}
-
 	subcribeEvents() {
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_DOWN, this.onMouseDown);
 		ViewerIns.getIns().subcribeEvent(VIEWER_EVENT.MOUSE_UP, this.onMouseUp);

@@ -28,11 +28,10 @@ export class CmdFactory implements ICmdEvent {
 	onCmdData: (data: any) => any;
 	onCmdEnd: () => any;
 
-	public createCmd(cmdName: string, entityId?: undefined, geometryDataId?: undefined) {
+	public createCmd(cmdName: string, roomType?: string, entityId?: undefined, geometryDataId?: undefined) {
 		if (this.currentCmd != null) {
 			return;
 		}
-
 		switch (cmdName) {
 			case CMD_NAME.OTHER:
 				this.currentCmd = new EntityCmd(cmdName, entityId, geometryDataId);
@@ -45,7 +44,7 @@ export class CmdFactory implements ICmdEvent {
 				this.isSelectCmdActive = true;
 				break;
 			case CMD_NAME.HATCH:
-				this.currentCmd = new HatchCmd(cmdName, entityId, geometryDataId);
+				this.currentCmd = new HatchCmd(cmdName, entityId, geometryDataId, roomType);
 				break;
 		}
 

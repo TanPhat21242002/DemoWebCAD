@@ -50,3 +50,13 @@ export const ACTION_MODIFY = {
 	MOVE: 1,
 	EDIT: 2,
 };
+
+export const TYPE_ROOM = {
+	WStyleRoom: "洋室",
+	JStyleRoom: "和室",
+	Entrance: "玄関",
+	LDK: "LDK",
+	BatchRoom: "浴室",
+	Toilet: "トイレ",
+	Corridor: "廊下",
+};
