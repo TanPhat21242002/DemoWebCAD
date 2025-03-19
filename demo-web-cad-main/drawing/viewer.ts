@@ -73,6 +73,11 @@ export class ViewerIns {
 			this.instance.visViewer.addEmbeddedFile("txt.shx", new Uint8Array(res));
 		}
 
+		{
+			const res = await this.instance.downloadFile("./font/NotoSansJP.ttf");
+			this.instance.visViewer.addEmbeddedFile("NotoSansJP.ttf", new Uint8Array(res));
+		}
+
 		this.instance.gridView.enableCanSnap(true);
 		this.instance.createGridView();
 

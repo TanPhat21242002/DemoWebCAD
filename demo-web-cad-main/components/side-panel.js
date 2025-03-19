@@ -34,40 +34,10 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 			}
 		}
 
-		switch (optionName) {
-			case "洋室":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.WStyleRoom);
-				setIsRectangleCmdActive(true);
-				break;
-			case "和室":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.JStyleRoom);
-				setIsRectangleCmdActive(true);
-				break;
-			case "玄関":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Entrance);
-				setIsRectangleCmdActive(true);
-				break;
-			case "LDK":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.LDK);
-				setIsRectangleCmdActive(true);
-				break;
-			case "浴室":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.BatchRoom);
-				setIsRectangleCmdActive(true);
-				break;
-			case "トイレ":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Toilet);
-				setIsRectangleCmdActive(true);
-				break;
-			case "廊下":
-				onClickActionCmd(CMD_NAME.HATCH, TYPE_ROOM.Corridor);
-				setIsRectangleCmdActive(true);
-				break;
-			default:
-				setIsRectangleCmdActive(true);
-				break;
+		if (Object.values(TYPE_ROOM).includes(optionName)) {
+			onClickActionCmd(CMD_NAME.HATCH, optionName);
+			setIsRectangleCmdActive(true);
 		}
-
 		setPressedRoomOption(optionName);
 	};
 

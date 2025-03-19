@@ -7,7 +7,6 @@ import { ACTION_ENTITY, TYPE_ROOM } from "../../config";
 export class HatchCmd extends RectangleCmd {
 	private polygonId = null;
 	private polygon = null;
-	private textId = null;
 	private roomType?: string;
 
 	constructor(cmdName: string, entityId?: string, geometryDataId?: string, roomType?: string) {
@@ -20,7 +19,7 @@ export class HatchCmd extends RectangleCmd {
 		const model = ViewerIns.getIns().visViewer.getActiveModel();
 		this.entityId = model.appendEntity("Polyline");
 		this.entity = this.entityId.openObject();
-		this.entity.setLineWeight(1);
+		//this.entity.setLineWeight(1);
 		this.entity.setColor(102, 102, 102);
 	}
 
@@ -36,6 +35,7 @@ export class HatchCmd extends RectangleCmd {
 			this.addText();
 			this.endCmd(true);
 		}
+		ViewerIns.getIns().visViewer.update();
 	};
 
 	override onMouseMove = (ev: MouseEvent, point: any) => {
@@ -106,21 +106,47 @@ export class HatchCmd extends RectangleCmd {
 	}
 
 	private addText() {
-		const centerX = (this.startPoint[0] + this.endPoint[0]) / 2;
+		const textLength = this.roomType ? this.roomType.length : 0;
+		const centerX = (this.startPoint[0] + this.endPoint[0]) / 2 - textLength;
 		const centerY = (this.startPoint[1] + this.endPoint[1]) / 2;
 		const textPosition = [centerX, centerY, 0];
+		const textSize = 1.5;
 
-		this.textId = this.entity.appendText(textPosition, "Text");
-		const textEntity = this.textId.openAsText();
-		textEntity.setTextSize(2);
+		let textColor = { r: 0, g: 0, b: 0 };
+		switch (this.roomType) {
+			case TYPE_ROOM.JStyleRoom:
+			case TYPE_ROOM.BatchRoom:
+			case TYPE_ROOM.Toilet:
+				textColor = { r: 255, g: 255, b: 255 };
+				break;
+			default:
+				textColor = { r: 0, g: 0, b: 0 };
+				break;
+		}
 
-		const textStyle = ViewerIns.getIns().visViewer.createTextStyle("custom_style");
-		const textStylePtr = textStyle.openObject();
-		//textStylePtr.setFont("arial.ttf", false, false, 0, 0);
+		this.entity.setColor(textColor.r, textColor.g, textColor.b);
 
-		textEntity.setTextStyle(textStyle);
+		const textId = this.entity.appendText(textPosition, this.roomType);
+		const textEntity = textId.openAsText();
+		textEntity.setTextSize(textSize);
 
-		textStylePtr.delete();
-		textEntity.delete();
+		const areaTextPosition = [centerX, centerY - 2, 0];
+		const areaTextId = this.entity.appendText(areaTextPosition, "35.2m²");
+		const areaTextEntity = areaTextId.openAsText();
+		areaTextEntity.setTextSize(textSize);
+
+		try {
+			const textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
+			const textStyle = textStyleId.openObject();
+
+			if (textStyle) {
+				textStyle.setFileName("NotoSansJP.ttf");
+				textStyle.setFont("NotoSansJP.ttf", 0, 0, false, false);
+				textEntity.setTextStyle(textStyleId);
+				areaTextEntity.setTextStyle(textStyleId);
+			}
+		} catch (error) {
+			console.error("Error when creating or opening text style:", error);
+		}
 	}
 }
