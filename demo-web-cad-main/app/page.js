@@ -45,17 +45,6 @@ export default function Home() {
 		}
 
 		initClientViewer();
-
-		const handleWheel = event => {
-			event.preventDefault();
-		};
-
-		const canvas = canvasRef.current;
-		canvas?.addEventListener("wheel", handleWheel, { passive: false });
-
-		return () => {
-			canvas?.removeEventListener("wheel", handleWheel);
-		};
 	}, []);
 
 	function initAllEvent() {
