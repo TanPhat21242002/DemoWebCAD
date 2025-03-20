@@ -6,6 +6,7 @@ import { EntityCmd } from "./EntityCmd";
 import { ArcCmd } from "./entity/ArcCmd";
 import { CircleCmd } from "./entity/CircleCmd";
 import { EllipseCmd } from "./entity/EllipseCmd";
+import { HatchCmd } from "./entity/HatchCmd";
 import { PolylineCmd } from "./entity/PolylineCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
 
@@ -209,7 +210,7 @@ export class SelectCmd extends RectangleCmd {
 		if (this.onCmdData != null) {
 			this.onCmdData(this.selectionSet);
 		}
-		console.log("SELECTION ADDED: ", selectionSetTmp.numItems());
+		//console.log("SELECTION ADDED: ", selectionSetTmp.numItems());
 		let cmd = null;
 		const interators = selectionSetTmp.getIterator();
 		for (; !interators.done(); interators.step()) {
@@ -230,6 +231,9 @@ export class SelectCmd extends RectangleCmd {
 						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kEllipse:
 						cmd = new EllipseCmd(CMD_NAME.ELLIPSE, entityId, arr[1]);
+						break;
+					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kPolygon:
+						cmd = new HatchCmd(CMD_NAME.ELLIPSE, entityId, arr[1]);
 						break;
 					default:
 						cmd = new EntityCmd(CMD_NAME.OTHER, entityId, arr[1]);

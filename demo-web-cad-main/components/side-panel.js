@@ -55,26 +55,13 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 	}, [isRectangleCmdActive]);
 
 	const roomOptions = [
-		{ name: "洋室", disabled: false },
-		{ name: "和室", disabled: false },
-		{ name: "玄関", disabled: false },
-		{ name: "Porch", disabled: false },
-		{ name: "Garage", disabled: false },
-		{ name: "Living", disabled: false },
-		{ name: "Dining", disabled: false },
-		{ name: "Kitchen", disabled: false },
-		{ name: "LD", disabled: false },
-		{ name: "LDK", disabled: false },
-		{ name: "浴室", disabled: false },
-		{ name: "トイレ", disabled: false },
-		{ name: "Restroom", disabled: false },
-		{ name: "廊下", disabled: false },
-		{ name: "Balcony", disabled: true },
-		{ name: "Tokonoma", disabled: false },
-		{ name: "Hiroen", disabled: false },
-		{ name: "Stairwell", disabled: true },
-		{ name: "Storage", disabled: false },
-		{ name: "Doma", disabled: false },
+		{ name: TYPE_ROOM.WStyleRoom, disabled: false },
+		{ name: TYPE_ROOM.JStyleRoom, disabled: false },
+		{ name: TYPE_ROOM.Entrance, disabled: false },
+		{ name: TYPE_ROOM.LDK, disabled: false },
+		{ name: TYPE_ROOM.BatchRoom, disabled: false },
+		{ name: TYPE_ROOM.Toilet, disabled: false },
+		{ name: TYPE_ROOM.Corridor, disabled: false },
 	];
 
 	return (

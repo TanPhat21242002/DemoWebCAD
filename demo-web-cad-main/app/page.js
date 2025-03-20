@@ -43,7 +43,19 @@ export default function Home() {
 			setViewerRender(true);
 			initAllEvent();
 		}
+
 		initClientViewer();
+
+		const handleWheel = event => {
+			event.preventDefault();
+		};
+
+		const canvas = canvasRef.current;
+		canvas?.addEventListener("wheel", handleWheel, { passive: false });
+
+		return () => {
+			canvas?.removeEventListener("wheel", handleWheel);
+		};
 	}, []);
 
 	function initAllEvent() {
@@ -68,7 +80,7 @@ export default function Home() {
 
 	return (
 		<div className={`h-screen ${showModal ? "disable-ui" : ""}`}>
-			<div className="w-full h-full overflow-auto relative">
+			<div className="w-full h-full overflow-hidden no-scrollbar relative">
 				<canvas ref={canvasRef} id="view" className="w-full h-full min-w-[2000px] min-h-[2000px]" />
 			</div>
 			<LoadingView isShow={showLoading} />

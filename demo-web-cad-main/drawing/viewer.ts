@@ -10,6 +10,7 @@ export const VIEWER_EVENT = {
 	KEY_PRESS: "keypress",
 	ZOOM_CHANGED: "zoom",
 	CONTEXT_MENU: "contextmenu",
+	WHEEL: "wheel",
 };
 
 export class ViewerIns {
@@ -188,9 +189,31 @@ export class ViewerIns {
 			ev.preventDefault();
 		});
 
+		this.viewer.addEventListener(VIEWER_EVENT.WHEEL, ev => {
+			this.handleMouseWheel(ev);
+		});
+
 		document.onkeydown = ev => {
 			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.keyCode);
 		};
+	}
+
+	private handleMouseWheel(ev: WheelEvent) {
+		ev.preventDefault();
+		const minZoom = 50;
+		const maxZoom = 1500;
+		const viewWidth = this.visViewer.activeView.viewFieldWidth;
+
+		if ((ev.deltaY > 0 && viewWidth <= minZoom) || (ev.deltaY < 0 && viewWidth >= maxZoom)) {
+			if (this.viewer.options.enableZoomWheel) {
+				this.viewer.options.enableZoomWheel = false;
+			}
+			return;
+		}
+
+		if (!this.viewer.options.enableZoomWheel) {
+			this.viewer.options.enableZoomWheel = true;
+		}
 	}
 
 	private startPan(ev) {
