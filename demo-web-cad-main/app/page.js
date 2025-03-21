@@ -19,7 +19,11 @@ export default function Home() {
 	const [currentFloor, setCurrentFloor] = useState("1F");
 
 	const onClickActionCmd = (cmd, roomType, entityId, geometryDataId) => {
-		CmdFactory.getIns().createCmd(cmd, roomType, entityId, geometryDataId);
+		if (cmd === "DRAFT") {
+			downloadFileDwg();
+		} else {
+			CmdFactory.getIns().createCmd(cmd, roomType, entityId, geometryDataId);
+		}
 	};
 
 	const handleSelect = selection => {
@@ -66,6 +70,40 @@ export default function Home() {
 	const handleFloorChange = floor => {
 		setCurrentFloor(floor);
 	};
+
+	function downloadFileDwg() {
+		setShowLoading(true);
+		ViewerIns.getIns().removeGridView();
+		ViewerIns.getIns().visViewer.saveVsfx(async data => {
+			ViewerIns.getIns().createGridView();
+			let blob = new Blob([data], { type: "application/octet-stream" });
+			const file = new File([blob], "file.vsfx");
+
+			let form = new FormData();
+			form.append("file", file);
+			let request = new XMLHttpRequest();
+			request.responseType = "blob";
+
+			request.open("POST", "https://file-oda-converter.tgl-cloud.com/FileConverterDownload/", true);
+
+			request.onreadystatechange = () => {
+				setShowLoading(false);
+				if (request.readyState === 4) {
+					let blob = new Blob([request.response], { type: "application/octet-stream" });
+					let url = window.URL.createObjectURL(blob);
+
+					let a = document.createElement("a");
+					document.body.appendChild(a);
+					a.style = "display: none";
+					a.href = url;
+					a.download = "vinacad-web.dwg";
+					a.click();
+					window.URL.revokeObjectURL(url);
+				}
+			};
+			request.send(form);
+		});
+	}
 
 	return (
 		<div className={`h-screen ${showModal ? "disable-ui" : ""}`}>

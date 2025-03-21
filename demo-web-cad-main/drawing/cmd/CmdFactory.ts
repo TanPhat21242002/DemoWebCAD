@@ -1,3 +1,5 @@
+/* eslint-disable no-var */
+/* eslint-disable no-loss-of-precision */
 import { CMD_NAME } from "../config";
 import { DragRoomCmd } from "./entity/DragRoomCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
