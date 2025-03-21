@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ACTION_ENTITY, ACTION_MODIFY } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";
@@ -121,7 +122,7 @@ export class BoxCmd extends EntityCmd {
 		return this.geometryDataId.openAsBox();
 	}
 
-	protected initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudBox(this.geometryData);
 		super.drawOverlayEntity(arrPoints);
 	}

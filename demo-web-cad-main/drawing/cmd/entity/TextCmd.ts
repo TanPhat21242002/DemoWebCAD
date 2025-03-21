@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ACTION_ENTITY, ACTION_MODIFY } from "../../config";
 import { ViewerIns } from "../../viewer";
 import { EntityCmd } from "../EntityCmd";
@@ -131,10 +132,7 @@ export class TextCmd extends EntityCmd {
 		input.focus();
 	};
 
-	inputTextChange = ev => {
-		// this.geometryData.setString(ev.target.value);
-		console.log(ev);
-	};
+	inputTextChange = ev => {};
 
 	initForModify(point) {
 		if (this.modeModify == ACTION_MODIFY.NONE) {

@@ -12,7 +12,7 @@ export class DragRoomCmd extends RectangleCmd {
 	private width: number;
 	private height: number;
 
-	constructor(cmdName: string, entityId?: string, geometryDataId?: string, roomType?: string) {
+	constructor(cmdName: string, entityId?, geometryDataId?, roomType?) {
 		super(cmdName, entityId, geometryDataId);
 		this.roomType = roomType;
 	}
@@ -41,6 +41,13 @@ export class DragRoomCmd extends RectangleCmd {
 		}
 		ViewerIns.getIns().visViewer.update();
 	};
+
+	override modify() {
+		this.modeEntity = ACTION_ENTITY.MODIFY;
+		this.entity = this.entityId.openObject();
+		this.createOverlayEntity();
+		this.initOverlayData();
+	}
 
 	override onMouseMove = (ev: MouseEvent, point: any) => {
 		if (!this.geometryDataId && !this.geometryData) {
@@ -180,7 +187,7 @@ export class DragRoomCmd extends RectangleCmd {
 		}
 	}
 
-	public initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudPolyline(this.geometryData);
 		const centers = DrawingUtil.getCenterPointCloudEntity(this.entity);
 		if (centers.length > 0) {

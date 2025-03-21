@@ -57,7 +57,7 @@ export class CircleCmd extends EntityCmd {
 		return this.geometryDataId.openAsCircle();
 	}
 
-	protected initOverlayData() {
+	initOverlayData() {
 		const arrPoints = DrawingUtil.getAllPointCloudCircle(this.geometryData);
 		super.drawOverlayEntity(arrPoints);
 	}

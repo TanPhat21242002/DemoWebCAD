@@ -121,7 +121,7 @@ export class ArcCmd extends EntityCmd {
 		return this.geometryDataId.openAsCircleArc();
 	}
 
-	protected initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudCicleArc(this.geometryData);
 		const centers = DrawingUtil.getCenterPointCloudEntity(this.entity);
 		if (centers.length > 0) {

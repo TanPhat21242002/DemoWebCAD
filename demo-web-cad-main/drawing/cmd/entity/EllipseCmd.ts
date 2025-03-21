@@ -1,4 +1,4 @@
-import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig } from "../../config";
+import { ACTION_ENTITY, ACTION_MODIFY } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";
 import { EntityCmd } from "../EntityCmd";
@@ -151,7 +151,7 @@ export class EllipseCmd extends EntityCmd {
 		return this.geometryDataId.openAsEllipse();
 	}
 
-	protected initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudEllipse(this.geometryData);
 		super.drawOverlayEntity(arrPoints);
 	}
