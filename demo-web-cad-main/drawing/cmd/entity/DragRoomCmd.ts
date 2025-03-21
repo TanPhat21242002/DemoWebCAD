@@ -5,7 +5,7 @@ import { ViewerIns } from "../../viewer";
 import { ACTION_ENTITY, TYPE_ROOM } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 
-export class HatchCmd extends RectangleCmd {
+export class DragRoomCmd extends RectangleCmd {
 	private polygonId = null;
 	private polygon = null;
 	private roomType?: string;
@@ -180,8 +180,12 @@ export class HatchCmd extends RectangleCmd {
 		}
 	}
 
-	protected initOverlayData(): void {
-		const arrPoints = DrawingUtil.getAllPointCloudRec(this.geometryData);
+	public initOverlayData(): void {
+		const arrPoints = DrawingUtil.getAllPointCloudPolyline(this.geometryData);
+		const centers = DrawingUtil.getCenterPointCloudEntity(this.entity);
+		if (centers.length > 0) {
+			arrPoints.push(centers[0]);
+		}
 		super.drawOverlayEntity(arrPoints);
 	}
 

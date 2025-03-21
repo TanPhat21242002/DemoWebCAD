@@ -6,7 +6,7 @@ import { IEntityProp } from "./interface/IEntityProp";
 import { VIEWER_EVENT, ViewerIns } from "../viewer";
 import { IEntityEvent } from "./interface/IEntityEvent";
 import { DrawingUtil } from "../util/DrawingUtil";
-import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig, ENTITY_NAME } from "../config";
+import { ACTION_ENTITY, ACTION_MODIFY, DrawingConfig, ENTITY_NAME, CMD_NAME } from "../config";
 import { ICmdEvent } from "./interface/ICmdEvent";
 
 export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityEvent, ICmdEvent {
@@ -35,7 +35,6 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 
 	constructor(cmdName: string, entityId?, geometryDataId?) {
 		this.cmdName = cmdName;
-
 		if (!entityId) {
 			this.add();
 		} else {
@@ -45,6 +44,7 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 			this.modify();
 		}
 	}
+
 	onZoomChanged(ev: any, data: any): void {
 		throw new Error("Method not implemented.");
 	}
@@ -282,7 +282,7 @@ export class EntityCmd implements IBaseCmd, IEntityAction, IEntityProp, IEntityE
 		return this.geometryDataId.openObject();
 	}
 
-	protected initOverlayData() {
+	initOverlayData() {
 		const arrPoints = DrawingUtil.getCenterPointCloudEntity(this.entity);
 		this.drawOverlayEntity(arrPoints);
 	}

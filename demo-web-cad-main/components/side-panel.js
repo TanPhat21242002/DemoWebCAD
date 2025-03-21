@@ -35,7 +35,7 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 		}
 
 		if (Object.values(TYPE_ROOM).includes(optionName)) {
-			onClickActionCmd(CMD_NAME.HATCH, optionName);
+			onClickActionCmd(CMD_NAME.DRAGROOM, optionName);
 			setIsRectangleCmdActive(true);
 		}
 		setPressedRoomOption(optionName);

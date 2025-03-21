@@ -181,7 +181,6 @@ export class PolylineCmd extends EntityCmd {
 	}
 
 	override onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
-		console.log("keyCode", keyCode);
 		switch (keyCode) {
 			//ESC
 			case 27:
@@ -214,7 +213,7 @@ export class PolylineCmd extends EntityCmd {
 		return (this.geometryData = this.geometryDataId.openAsPolyline());
 	}
 
-	protected initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudPolyline(this.geometryData);
 		const centers = DrawingUtil.getCenterPointCloudEntity(this.entity);
 		if (centers.length > 0) {

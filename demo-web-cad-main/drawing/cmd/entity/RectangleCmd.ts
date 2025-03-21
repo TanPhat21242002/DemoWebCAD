@@ -103,7 +103,7 @@ export class RectangleCmd extends PolylineCmd {
 		return (this.geometryData = this.geometryDataId.openAsPolyline());
 	}
 
-	protected initOverlayData(): void {
+	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudRec(this.geometryData);
 		super.drawOverlayEntity(arrPoints);
 	}

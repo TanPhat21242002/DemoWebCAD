@@ -272,7 +272,7 @@ export class TextCmd extends EntityCmd {
 		return this.geometryDataId.openAsText();
 	}
 
-	protected initOverlayData() {
+	initOverlayData() {
 		const arrPoints = [];
 		const extents = this.entity.getExtents();
 		if (extents.isValidExtents()) {

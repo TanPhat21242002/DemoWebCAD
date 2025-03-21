@@ -36,7 +36,7 @@ export const CMD_NAME = {
 	TEXT: "TEXT",
 	ORBIT: "ORBIT",
 	BOX: "BOX",
-	HATCH: "HATCH",
+	DRAGROOM: "DRAGROOM",
 };
 
 export const ACTION_ENTITY = {

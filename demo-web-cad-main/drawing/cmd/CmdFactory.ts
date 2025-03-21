@@ -1,9 +1,9 @@
 import { CMD_NAME } from "../config";
+import { DragRoomCmd } from "./entity/DragRoomCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
 import { EntityCmd } from "./EntityCmd";
 import { ICmdEvent } from "./interface/ICmdEvent";
 import { SelectCmd } from "./SelectCmd";
-import { HatchCmd } from "./entity/HatchCmd";
 
 export class CmdFactory implements ICmdEvent {
 	private static instance = null;
@@ -43,8 +43,8 @@ export class CmdFactory implements ICmdEvent {
 				this.currentCmd = new SelectCmd(cmdName, entityId, geometryDataId);
 				this.isSelectCmdActive = true;
 				break;
-			case CMD_NAME.HATCH:
-				this.currentCmd = new HatchCmd(cmdName, entityId, geometryDataId, roomType);
+			case CMD_NAME.DRAGROOM:
+				this.currentCmd = new DragRoomCmd(cmdName, entityId, geometryDataId, roomType);
 				break;
 		}
 
