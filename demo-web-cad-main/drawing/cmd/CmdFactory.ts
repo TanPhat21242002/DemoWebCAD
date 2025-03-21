@@ -1,6 +1,7 @@
 /* eslint-disable no-var */
 /* eslint-disable no-loss-of-precision */
 import { CMD_NAME } from "../config";
+import { DotRoomCmd } from "./entity/DotRoomCmd";
 import { DragRoomCmd } from "./entity/DragRoomCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
 import { EntityCmd } from "./EntityCmd";
@@ -47,6 +48,9 @@ export class CmdFactory implements ICmdEvent {
 				break;
 			case CMD_NAME.DRAGROOM:
 				this.currentCmd = new DragRoomCmd(cmdName, entityId, geometryDataId, roomType);
+				break;
+			case CMD_NAME.DOTROOM:
+				this.currentCmd = new DotRoomCmd(cmdName, entityId, geometryDataId, roomType);
 				break;
 		}
 

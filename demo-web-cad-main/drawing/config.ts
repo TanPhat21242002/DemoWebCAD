@@ -37,6 +37,7 @@ export const CMD_NAME = {
 	ORBIT: "ORBIT",
 	BOX: "BOX",
 	DRAGROOM: "DRAGROOM",
+	DOTROOM: "DOTROOM",
 };
 
 export const ACTION_ENTITY = {

@@ -17,6 +17,11 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 
 	const handleButtonClick = buttonType => {
 		setActiveButton(buttonType);
+
+		if (pressedRoomOption) {
+			const command = buttonType === "drag" ? CMD_NAME.DRAGROOM : CMD_NAME.DOTROOM;
+			onClickActionCmd(command, pressedRoomOption);
+		}
 	};
 
 	const handleRoomOptionClick = optionName => {
@@ -35,7 +40,8 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 		}
 
 		if (Object.values(TYPE_ROOM).includes(optionName)) {
-			onClickActionCmd(CMD_NAME.DRAGROOM, optionName);
+			const command = activeButton === "drag" ? CMD_NAME.DRAGROOM : CMD_NAME.DOTROOM;
+			onClickActionCmd(command, optionName);
 			setIsRectangleCmdActive(true);
 		}
 		setPressedRoomOption(optionName);
