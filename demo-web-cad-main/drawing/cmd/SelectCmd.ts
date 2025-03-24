@@ -4,11 +4,8 @@ import { ACTION_ENTITY, ACTION_MODIFY, CMD_NAME, ENTITY_NAME } from "../config";
 import { DrawingUtil } from "../util/DrawingUtil";
 import { ViewerIns } from "../viewer";
 import { EntityCmd } from "./EntityCmd";
-import { ArcCmd } from "./entity/ArcCmd";
-import { CircleCmd } from "./entity/CircleCmd";
 import { DotRoomCmd } from "./entity/DotRoomCmd";
 import { DragRoomCmd } from "./entity/DragRoomCmd";
-import { EllipseCmd } from "./entity/EllipseCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
 
 export class SelectCmd extends RectangleCmd {
@@ -221,17 +218,8 @@ export class SelectCmd extends RectangleCmd {
 			try {
 				const arr = ViewerIns.getIns().getTypeOfEntity(entity);
 				switch (arr[0]) {
-					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kCircle:
-						cmd = new CircleCmd(CMD_NAME.CIRCLE, entityId, arr[1]);
-						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kPolyline:
 						cmd = new DotRoomCmd(CMD_NAME.POLYLINE, entityId, arr[1]);
-						break;
-					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kCircularArc:
-						cmd = new ArcCmd(CMD_NAME.ARC, entityId, arr[1]);
-						break;
-					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kEllipse:
-						cmd = new EllipseCmd(CMD_NAME.ELLIPSE, entityId, arr[1]);
 						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kPolygon:
 						cmd = new DragRoomCmd(CMD_NAME.DRAGROOM, entityId, arr[1]);
