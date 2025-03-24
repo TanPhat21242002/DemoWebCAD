@@ -78,18 +78,48 @@ export class DragRoomCmd extends RectangleCmd {
 		const offset = 10;
 		const distance = 8;
 
-		this.createDimLine([p1[0] - distance, p1[1], 0], [p1[0] - offset, p1[1], 0], [p2[0] - offset, p2[1], 0], [p2[0] - distance, p2[1], 0]);
-		this.createDimLine([p3[0] + distance, p3[1], 0], [p3[0] + offset, p3[1], 0], [p4[0] + offset, p4[1], 0], [p4[0] + distance, p4[1], 0]);
-		this.createDimLine([p1[0], p1[1] + distance, 0], [p1[0], p1[1] + offset, 0], [p4[0], p4[1] + offset, 0], [p4[0], p4[1] + distance, 0]);
-		this.createDimLine([p2[0], p2[1] - distance, 0], [p2[0], p2[1] - offset, 0], [p3[0], p3[1] - offset, 0], [p3[0], p3[1] - distance, 0]);
+		DrawingUtil.createDimLine(
+			[p1[0] - distance, p1[1], 0],
+			[p1[0] - offset, p1[1], 0],
+			[p2[0] - offset, p2[1], 0],
+			[p2[0] - distance, p2[1], 0],
+			this.entityId,
+		);
+		DrawingUtil.createDimLine(
+			[p3[0] + distance, p3[1], 0],
+			[p3[0] + offset, p3[1], 0],
+			[p4[0] + offset, p4[1], 0],
+			[p4[0] + distance, p4[1], 0],
+			this.entityId,
+		);
+		DrawingUtil.createDimLine(
+			[p1[0], p1[1] + distance, 0],
+			[p1[0], p1[1] + offset, 0],
+			[p4[0], p4[1] + offset, 0],
+			[p4[0], p4[1] + distance, 0],
+			this.entityId,
+		);
+		DrawingUtil.createDimLine(
+			[p2[0], p2[1] - distance, 0],
+			[p2[0], p2[1] - offset, 0],
+			[p3[0], p3[1] - offset, 0],
+			[p3[0], p3[1] - distance, 0],
+			this.entityId,
+		);
 
 		const textHeight = `${this.height.toFixed(1)}m`;
 		const textWidth = `${this.width.toFixed(1)}m`;
 
-		this.createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2);
-		this.createDimText([p3[0] + offset - this.textSize, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2);
-		this.createDimText([(p1[0] + p4[0]) / 2 - this.textSize, p1[1] + offset + this.textSize, 0], textWidth, 0);
-		this.createDimText([(p2[0] + p3[0]) / 2 - this.textSize, p2[1] - offset + this.textSize, 0], textWidth, 0);
+		DrawingUtil.createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2, this.entityId, this.textStyleId);
+		DrawingUtil.createDimText(
+			[p3[0] + offset - this.textSize, (p1[1] + p2[1]) / 2 - this.textSize, 0],
+			textHeight,
+			Math.PI / 2,
+			this.entityId,
+			this.textStyleId,
+		);
+		DrawingUtil.createDimText([(p1[0] + p4[0]) / 2 - this.textSize, p1[1] + offset + this.textSize, 0], textWidth, 0, this.entityId, this.textStyleId);
+		DrawingUtil.createDimText([(p2[0] + p3[0]) / 2 - this.textSize, p2[1] - offset + this.textSize, 0], textWidth, 0, this.entityId, this.textStyleId);
 	}
 
 	initOverlayData(): void {
@@ -100,22 +130,6 @@ export class DragRoomCmd extends RectangleCmd {
 		}
 		super.drawOverlayEntity(arrPoints);
 	}
-
-	private createDimText = (pos: number[], text: string, angle: number) => {
-		const textId = this.entityId.openObject().appendText(pos, text);
-		const textEnt = textId.openAsText();
-		textId.openObject().setColor(255, 255, 255);
-		textEnt.setTextSize(this.textSize);
-		textEnt.setRotation(angle);
-		DrawingUtil.setTextStyle(textEnt, this.textStyleId);
-	};
-
-	private createDimLine = (start: number[], vertex1: number[], vertex2: number[], end: number[]) => {
-		const dimEnt = this.entityId.openObject();
-		dimEnt.setColor(255, 255, 255);
-
-		dimEnt.appendPolyline([start[0], start[1], start[2], vertex1[0], vertex1[1], vertex1[2], vertex2[0], vertex2[1], vertex2[2], end[0], end[1], end[2]]);
-	};
 
 	private updateFilledPolygon() {
 		const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);

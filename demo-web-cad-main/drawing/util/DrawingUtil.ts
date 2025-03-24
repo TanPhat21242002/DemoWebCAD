@@ -442,7 +442,7 @@ export class DrawingUtil {
 		return Math.abs(area) / 2;
 	}
 
-	public static createWall(entity: any, points: any) {
+	static createWall(entity: any, points: any) {
 		const entId = entity.appendPolyline(points);
 		const weightDef = new (ViewerIns.getIns().visLib.OdTvLineWeightDef)();
 		weightDef.setValue(10);
@@ -463,4 +463,20 @@ export class DrawingUtil {
 			console.error("Error when creating or opening text style:", error);
 		}
 	}
+
+	public static createDimText = (pos: number[], text: string, angle: number, entityId: any, textStyleId: any) => {
+		const textId = entityId.openObject().appendText(pos, text);
+		const textEnt = textId.openAsText();
+		textId.openObject().setColor(255, 255, 255);
+		textEnt.setTextSize(1);
+		textEnt.setRotation(angle);
+		DrawingUtil.setTextStyle(textEnt, textStyleId);
+	};
+
+	public static createDimLine = (start: number[], vertex1: number[], vertex2: number[], end: number[], entityId: any) => {
+		const dimEnt = entityId.openObject();
+		dimEnt.setColor(255, 255, 255);
+
+		dimEnt.appendPolyline([start[0], start[1], start[2], vertex1[0], vertex1[1], vertex1[2], vertex2[0], vertex2[1], vertex2[2], end[0], end[1], end[2]]);
+	};
 }
