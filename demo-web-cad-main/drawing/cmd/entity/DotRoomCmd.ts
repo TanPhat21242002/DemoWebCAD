@@ -37,9 +37,11 @@ export class DotRoomCmd extends EntityCmd {
 				}
 			}
 		} else if (this.modeEntity == ACTION_ENTITY.MODIFY) {
-			this.initForModify(point);
+			//this.initForModify(point);
 		}
 	};
+
+	override modify(): void {}
 
 	private addTextTemp(startPt: any, endPt: any) {
 		if (!this.polylinePoints || this.polylinePoints.length < 2) return;
@@ -263,6 +265,7 @@ export class DotRoomCmd extends EntityCmd {
 						this.geometryData.setPoints(this.getPolylineData());
 					}
 					this.endCmd(true);
+					this.entity.removeGeometryData(this.geometryDataId);
 					DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
 					DrawingUtil.removeAllEnt(this.vertexPoints, this.entity);
 					this.removeTempText();
