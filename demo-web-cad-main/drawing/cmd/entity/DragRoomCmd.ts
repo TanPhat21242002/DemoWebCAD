@@ -43,9 +43,7 @@ export class DragRoomCmd extends RectangleCmd {
 				points.push(points[0], points[1], points[2]);
 			}
 			this.polygon = DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
-
 			this.addText();
-			DrawingUtil.createWall(this.entity, points);
 			this.createDim();
 			this.endCmd(true);
 		}

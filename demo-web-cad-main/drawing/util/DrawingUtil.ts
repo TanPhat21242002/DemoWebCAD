@@ -367,7 +367,7 @@ export class DrawingUtil {
 
 	public static removeAllEnt(listEnt: any, entity: any) {
 		try {
-			listEnt.forEach(entId => {
+			listEnt.forEach((entId: any) => {
 				entity.removeGeometryData(entId);
 			});
 			listEnt = [];
@@ -414,6 +414,7 @@ export class DrawingUtil {
 		// transparencyDef.setValue(0.2);
 		// this.polygonId.openObject().setTransparency(transparencyDef);
 
+		this.createWall(entity, points);
 		return polygon;
 	}
 
@@ -426,6 +427,19 @@ export class DrawingUtil {
 				[endPoint[0], startPt[1], startPt[2]],
 			];
 		}
+	}
+
+	public static calculateArea(points: any) {
+		let area = 0;
+		const n = points.length / 3;
+		for (let i = 0; i < n; i++) {
+			const x1 = points[i * 3];
+			const y1 = points[i * 3 + 1];
+			const x2 = points[((i + 1) % n) * 3];
+			const y2 = points[((i + 1) % n) * 3 + 1];
+			area += x1 * y2 - x2 * y1;
+		}
+		return Math.abs(area) / 2;
 	}
 
 	public static createWall(entity: any, points: any) {
@@ -447,39 +461,6 @@ export class DrawingUtil {
 			}
 		} catch (error) {
 			console.error("Error when creating or opening text style:", error);
-		}
-	}
-
-	public static addText(entity: any, textStyleId: any, center: any, roomType: any) {
-		try {
-			const textSize = 1.5;
-			let textColor: { r: any; g: any; b: any };
-			switch (roomType) {
-				case TYPE_ROOM.JStyleRoom:
-				case TYPE_ROOM.BatchRoom:
-				case TYPE_ROOM.Toilet:
-					textColor = { r: 255, g: 255, b: 255 };
-					break;
-				default:
-					textColor = { r: 0, g: 0, b: 0 };
-					break;
-			}
-
-			const textId = entity.appendText(center, roomType);
-			const textEntity = textId.openAsText();
-			textId.openObject().setColor(textColor.r, textColor.g, textColor.b);
-			textEntity.setTextSize(textSize);
-
-			DrawingUtil.setTextStyle(textEntity, textStyleId);
-
-			//const areaTextPosition = [center.X, center.Y - 2, 0];
-			// const areaTextId = entity.appendText(areaTextPosition, `${area.toFixed(1)}m²`);
-			// areaTextId.openObject().setColor(textColor.r, textColor.g, textColor.b);
-			// const areaTextEntity = areaTextId.openAsText();
-			// areaTextEntity.setTextSize(textSize);
-			// DrawingUtil.setTextStyle(areaTextEntity, textStyleId);
-		} catch (error) {
-			console.error(error);
 		}
 	}
 }

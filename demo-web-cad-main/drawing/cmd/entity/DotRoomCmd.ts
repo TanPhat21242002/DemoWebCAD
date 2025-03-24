@@ -292,8 +292,7 @@ export class DotRoomCmd extends EntityCmd {
 						points = points.concat(item);
 					});
 					DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
-					DrawingUtil.createWall(this.entity, points);
-					DrawingUtil.addText(this.entity, this.textStyleId, this.entity.getExtents().center(), this.roomType);
+					this.addText();
 				}
 				this.endCmd(true);
 				DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
@@ -302,6 +301,42 @@ export class DotRoomCmd extends EntityCmd {
 				break;
 		}
 	};
+
+	private addText() {
+		const textSize = 1.5;
+		const textPosition = this.entity.getExtents().center();
+
+		let textColor: { r: any; g: any; b: any };
+		switch (this.roomType) {
+			case TYPE_ROOM.JStyleRoom:
+			case TYPE_ROOM.BatchRoom:
+			case TYPE_ROOM.Toilet:
+				textColor = { r: 255, g: 255, b: 255 };
+				break;
+			default:
+				textColor = { r: 0, g: 0, b: 0 };
+				break;
+		}
+
+		const textId = this.entity.appendText(textPosition, this.roomType);
+		const textEntity = textId.openAsText();
+		textId.openObject().setColor(textColor.r, textColor.g, textColor.b);
+		textEntity.setTextSize(textSize);
+		DrawingUtil.setTextStyle(textEntity, this.textStyleId);
+
+		let points = [];
+		this.polylinePoints.forEach(item => {
+			points = points.concat(item);
+		});
+
+		const areaTextPosition = [textPosition[0], textPosition[1] - 2, 0];
+		const area = DrawingUtil.calculateArea(points);
+		const areaTextId = this.entity.appendText(areaTextPosition, `${area.toFixed(1)}m²`);
+		areaTextId.openObject().setColor(textColor.r, textColor.g, textColor.b);
+		const areaTextEntity = areaTextId.openAsText();
+		areaTextEntity.setTextSize(textSize);
+		DrawingUtil.setTextStyle(areaTextEntity, this.textStyleId);
+	}
 
 	protected geometryDataForType() {
 		return (this.geometryData = this.geometryDataId.openAsPolyline());
