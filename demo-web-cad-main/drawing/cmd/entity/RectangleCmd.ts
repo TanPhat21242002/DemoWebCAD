@@ -55,7 +55,7 @@ export class RectangleCmd extends PolylineCmd {
 	override modifySize(arr: any): void {
 		if (this.modeEntity == ACTION_ENTITY.CREATE) {
 			this.endPoint = arr;
-			const rectangleData = this.getRectangleData();
+			const rectangleData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 			this.geometryData.setPoints(rectangleData[0].concat(rectangleData[1]).concat(rectangleData[2]).concat(rectangleData[3]).concat(rectangleData[0]));
 		} else if (this.modeEntity == ACTION_ENTITY.MODIFY) {
 			super.modifySize(arr);
@@ -75,7 +75,7 @@ export class RectangleCmd extends PolylineCmd {
 		const vector02 = ViewerIns.getIns().createVector3DFromArray(arr);
 
 		const translateVector = vector02.sub(vector01);
-		const rectangleData = this.getRectangleData();
+		const rectangleData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 		rectangleData[0] = ViewerIns.getIns().createPoint3DFromArray(rectangleData[0]).translate(translateVector).toArray();
 		rectangleData[1] = ViewerIns.getIns().createPoint3DFromArray(rectangleData[1]).translate(translateVector).toArray();
 		rectangleData[2] = ViewerIns.getIns().createPoint3DFromArray(rectangleData[2]).translate(translateVector).toArray();
@@ -85,17 +85,6 @@ export class RectangleCmd extends PolylineCmd {
 
 		if (this.modeEntity == ACTION_ENTITY.MODIFY) {
 			this.createConnectedLine(this.baseDownPoint, arr);
-		}
-	}
-
-	getRectangleData() {
-		if (this.startPoint && this.endPoint) {
-			return [
-				[this.startPoint[0], this.startPoint[1], this.startPoint[2]],
-				[this.startPoint[0], this.endPoint[1], this.endPoint[2]],
-				[this.endPoint[0], this.endPoint[1], this.endPoint[2]],
-				[this.endPoint[0], this.startPoint[1], this.startPoint[2]],
-			];
 		}
 	}
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ACTION_ENTITY, ACTION_MODIFY } from "../../config";
+import { ACTION_ENTITY, ACTION_MODIFY, TYPE_ROOM } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 import { ViewerIns } from "../../viewer";
 import { EntityCmd } from "../EntityCmd";
@@ -12,7 +12,7 @@ export class DotRoomCmd extends EntityCmd {
 	private closePointIndex = -1;
 	private roomType?: string;
 	private segmentTexts = [];
-	private vertexCircles = [];
+	private vertexPoints = [];
 	private tempTextId = null;
 	private textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
 	textSize = 1.5;
@@ -28,12 +28,20 @@ export class DotRoomCmd extends EntityCmd {
 			if (this.polylinePoints.length > 2 && this.isClosedPolyline) {
 				this.endCmd(true);
 			}
+			if (this.polylinePoints.length > 2) {
+				if (DrawingUtil.compareTwoPoints(this.polylinePoints[0], this.polylinePoints[this.polylinePoints.length - 1])) {
+					this.endCmd(true);
+					DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
+					DrawingUtil.removeAllEnt(this.vertexPoints, this.entity);
+					this.removeTempText();
+				}
+			}
 		} else if (this.modeEntity == ACTION_ENTITY.MODIFY) {
 			this.initForModify(point);
 		}
 	};
 
-	private addText(startPt: any, endPt: any) {
+	private addTextTemp(startPt: any, endPt: any) {
 		if (!this.polylinePoints || this.polylinePoints.length < 2) return;
 
 		const length = Math.sqrt(Math.pow(endPt[0] - startPt[0], 2) + Math.pow(endPt[1] - startPt[1], 2)).toFixed(1);
@@ -48,33 +56,7 @@ export class DotRoomCmd extends EntityCmd {
 		textEntity.setTextSize(this.textSize);
 		textId.openObject().setColor(255, 255, 255);
 
-		this.setTextStyle(textEntity);
-	}
-
-	private removeAllTexts() {
-		try {
-			this.segmentTexts.forEach(textId => {
-				this.entity.removeGeometryData(textId);
-			});
-			this.segmentTexts = [];
-		} catch (error) {
-			console.error("Cant delete this text segment", error);
-		}
-	}
-
-	private setTextStyle(textEntity: any) {
-		try {
-			if (this.textStyleId) {
-				const textStyle = this.textStyleId.openObject();
-				if (textStyle) {
-					textStyle.setFileName("NotoSansJP.ttf");
-					textStyle.setFont("NotoSansJP.ttf", false, false, 0, 0);
-					textEntity.setTextStyle(this.textStyleId);
-				}
-			}
-		} catch (error) {
-			console.error("Error when creating or opening text style:", error);
-		}
+		DrawingUtil.setTextStyle(textEntity, this.textStyleId);
 	}
 
 	initForCreate(point) {
@@ -89,29 +71,18 @@ export class DotRoomCmd extends EntityCmd {
 			if (this.polylinePoints.length > 1) {
 				const startPt = this.polylinePoints[this.polylinePoints.length - 3];
 				const endPt = this.polylinePoints[this.polylinePoints.length - 2];
-				this.addText(startPt, endPt);
+				this.addTextTemp(startPt, endPt);
 			}
 		}
-		this.addVertexCircle(point);
+		this.addVertexPoint(point);
 	}
 
-	private addVertexCircle(point: any) {
-		const circleId = this.entity.appendCircleWithNormal(point, 0.5, [0, 0, 1]);
-		this.vertexCircles.push(circleId);
-		const circleEntity = circleId.openAsCircle();
-		circleEntity.setFilled(true);
-		circleId.openObject().setColor(255, 0, 0);
-	}
-
-	private removeAllVertexCircles() {
-		try {
-			this.vertexCircles.forEach(circleId => {
-				this.entity.removeGeometryData(circleId);
-			});
-			this.vertexCircles = [];
-		} catch (error) {
-			console.error("Cannot delete vertex circles", error);
-		}
+	private addVertexPoint(point: any) {
+		const pointId = this.entity.appendPointCloud(point);
+		this.vertexPoints.push(pointId);
+		const pointTmp = pointId.openAsPointCloud();
+		pointTmp.setPointSize(10);
+		pointId.openObject().setColor(255, 0, 0);
 	}
 
 	initForModify(point) {
@@ -246,7 +217,7 @@ export class DotRoomCmd extends EntityCmd {
 		const textEntity = this.tempTextId.openAsText();
 		textEntity.setTextSize(this.textSize);
 		this.tempTextId.openObject().setColor(255, 255, 255);
-		this.setTextStyle(textEntity);
+		DrawingUtil.setTextStyle(textEntity, this.textStyleId);
 	}
 
 	getPolylineData() {
@@ -292,8 +263,8 @@ export class DotRoomCmd extends EntityCmd {
 						this.geometryData.setPoints(this.getPolylineData());
 					}
 					this.endCmd(true);
-					this.removeAllTexts();
-					this.removeAllVertexCircles();
+					DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
+					DrawingUtil.removeAllEnt(this.vertexPoints, this.entity);
 					this.removeTempText();
 				} else {
 					this.cancelCmd(true);
@@ -313,10 +284,17 @@ export class DotRoomCmd extends EntityCmd {
 					this.isClosedPolyline = true;
 					this.closePointIndex = this.polylinePoints.length - 1;
 					this.geometryData.setPoints(this.getPolylineData());
+					let points = [];
+					this.polylinePoints.forEach(item => {
+						points = points.concat(item);
+					});
+					DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
+					DrawingUtil.createWall(this.entity, points);
+					DrawingUtil.addText(this.entity, this.textStyleId, this.entity.getExtents().center(), this.roomType);
 				}
 				this.endCmd(true);
-				this.removeAllTexts();
-				this.removeAllVertexCircles();
+				DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
+				DrawingUtil.removeAllEnt(this.vertexPoints, this.entity);
 				this.removeTempText();
 				break;
 		}

@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-empty */
 import { ACTION_ENTITY, ACTION_MODIFY, CMD_NAME, ENTITY_NAME } from "../config";
+import { DrawingUtil } from "../util/DrawingUtil";
 import { ViewerIns } from "../viewer";
 import { EntityCmd } from "./EntityCmd";
 import { ArcCmd } from "./entity/ArcCmd";
 import { CircleCmd } from "./entity/CircleCmd";
+import { DotRoomCmd } from "./entity/DotRoomCmd";
 import { DragRoomCmd } from "./entity/DragRoomCmd";
 import { EllipseCmd } from "./entity/EllipseCmd";
-import { PolylineCmd } from "./entity/PolylineCmd";
 import { RectangleCmd } from "./entity/RectangleCmd";
 
 export class SelectCmd extends RectangleCmd {
@@ -134,7 +135,7 @@ export class SelectCmd extends RectangleCmd {
 		}
 
 		if (this.polygonId == null && this.polygon == null) {
-			const polylineData = this.getRectangleData();
+			const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 			let data = [];
 			polylineData.forEach(item => {
 				data = data.concat(item);
@@ -153,7 +154,7 @@ export class SelectCmd extends RectangleCmd {
 
 		if (this.modeEntity == ACTION_ENTITY.CREATE || this.modeModify == ACTION_MODIFY.EDIT) {
 			this.modifySize(point);
-			const polylineData = this.getRectangleData();
+			const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 			let data = [];
 			polylineData.forEach(item => {
 				data = data.concat(item);
@@ -164,7 +165,7 @@ export class SelectCmd extends RectangleCmd {
 
 		if (this.modeEntity == ACTION_ENTITY.MODIFY && this.modeModify == ACTION_MODIFY.MOVE) {
 			this.modifyPosition(point);
-			const polylineData = this.getRectangleData();
+			const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 			let data = [];
 			polylineData.forEach(item => {
 				data = data.concat(item);
@@ -224,7 +225,7 @@ export class SelectCmd extends RectangleCmd {
 						cmd = new CircleCmd(CMD_NAME.CIRCLE, entityId, arr[1]);
 						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kPolyline:
-						cmd = new PolylineCmd(CMD_NAME.POLYLINE, entityId, arr[1]);
+						cmd = new DotRoomCmd(CMD_NAME.POLYLINE, entityId, arr[1]);
 						break;
 					case ViewerIns.getIns().visLib.OdTvGeometryDataType.kCircularArc:
 						cmd = new ArcCmd(CMD_NAME.ARC, entityId, arr[1]);

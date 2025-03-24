@@ -1,4 +1,5 @@
 /* eslint-disable no-empty */
+import { TYPE_ROOM } from "../config";
 import { ViewerIns } from "../viewer";
 
 export class DrawingUtil {
@@ -222,7 +223,7 @@ export class DrawingUtil {
 		const point3d01 = ViewerIns.getIns().createPoint3DFromArray(point01);
 		const point3d02 = ViewerIns.getIns().createPoint3DFromArray(point02);
 		const distanceTo = point3d01.distanceTo(point3d02);
-		return distanceTo < 0.2;
+		return distanceTo < 0.5;
 	}
 
 	public static getPropertiesOfSelectionSet(selectionSet) {
@@ -362,5 +363,123 @@ export class DrawingUtil {
 			} catch {}
 		}
 		return properties;
+	}
+
+	public static removeAllEnt(listEnt: any, entity: any) {
+		try {
+			listEnt.forEach(entId => {
+				entity.removeGeometryData(entId);
+			});
+			listEnt = [];
+		} catch (error) {
+			console.error("Cannot delete this entity", error);
+		}
+	}
+
+	public static createFilledPolygon(entity: any, roomType: any, points: any) {
+		const polygonId = entity.appendPolygon(points);
+		const polygon = polygonId.openAsPolygon();
+		polygon.setFilled(true);
+
+		let color: any;
+		switch (roomType) {
+			case TYPE_ROOM.WStyleRoom:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
+				break;
+			case TYPE_ROOM.JStyleRoom:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+				break;
+			case TYPE_ROOM.Entrance:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(226, 226, 226);
+				break;
+			case TYPE_ROOM.LDK:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
+				break;
+			case TYPE_ROOM.BatchRoom:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+				break;
+			case TYPE_ROOM.Toilet:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
+				break;
+			case TYPE_ROOM.Corridor:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 227, 158);
+				break;
+			default:
+				color = new (ViewerIns.getIns().visLib.OdTvColorDef)(254, 0, 0);
+				break;
+		}
+		polygonId.openObject().setColor(color, ViewerIns.getIns().visLib.GeometryTypes.kAll);
+
+		// const transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
+		// transparencyDef.setValue(0.2);
+		// this.polygonId.openObject().setTransparency(transparencyDef);
+
+		return polygon;
+	}
+
+	public static getRectangleData(startPt: any, endPoint: any) {
+		if (startPt && endPoint) {
+			return [
+				[startPt[0], startPt[1], startPt[2]],
+				[startPt[0], endPoint[1], endPoint[2]],
+				[endPoint[0], endPoint[1], endPoint[2]],
+				[endPoint[0], startPt[1], startPt[2]],
+			];
+		}
+	}
+
+	public static createWall(entity: any, points: any) {
+		const entId = entity.appendPolyline(points);
+		const weightDef = new (ViewerIns.getIns().visLib.OdTvLineWeightDef)();
+		weightDef.setValue(10);
+
+		entId.openObject().setLineWeight(weightDef);
+		entId.openObject().setColor(102, 102, 102);
+	}
+
+	public static setTextStyle(textEntity: any, textStyleId: any) {
+		try {
+			const textStyle = textStyleId.openObject();
+			if (textStyle) {
+				textStyle.setFileName("NotoSansJP.ttf");
+				textStyle.setFont("NotoSansJP.ttf", false, false, 0, 0);
+				textEntity.setTextStyle(textStyleId);
+			}
+		} catch (error) {
+			console.error("Error when creating or opening text style:", error);
+		}
+	}
+
+	public static addText(entity: any, textStyleId: any, center: any, roomType: any) {
+		try {
+			const textSize = 1.5;
+			let textColor: { r: any; g: any; b: any };
+			switch (roomType) {
+				case TYPE_ROOM.JStyleRoom:
+				case TYPE_ROOM.BatchRoom:
+				case TYPE_ROOM.Toilet:
+					textColor = { r: 255, g: 255, b: 255 };
+					break;
+				default:
+					textColor = { r: 0, g: 0, b: 0 };
+					break;
+			}
+
+			const textId = entity.appendText(center, roomType);
+			const textEntity = textId.openAsText();
+			textId.openObject().setColor(textColor.r, textColor.g, textColor.b);
+			textEntity.setTextSize(textSize);
+
+			DrawingUtil.setTextStyle(textEntity, textStyleId);
+
+			//const areaTextPosition = [center.X, center.Y - 2, 0];
+			// const areaTextId = entity.appendText(areaTextPosition, `${area.toFixed(1)}m²`);
+			// areaTextId.openObject().setColor(textColor.r, textColor.g, textColor.b);
+			// const areaTextEntity = areaTextId.openAsText();
+			// areaTextEntity.setTextSize(textSize);
+			// DrawingUtil.setTextStyle(areaTextEntity, textStyleId);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 }

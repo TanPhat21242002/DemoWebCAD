@@ -6,11 +6,12 @@ import { ACTION_ENTITY, TYPE_ROOM } from "../../config";
 import { DrawingUtil } from "../../util/DrawingUtil";
 
 export class DragRoomCmd extends RectangleCmd {
-	private polygonId = null;
 	private polygon = null;
 	private roomType?: string;
 	private width: number;
 	private height: number;
+	private textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
+	textSize = 1;
 
 	constructor(cmdName: string, entityId?, geometryDataId?, roomType?) {
 		super(cmdName, entityId, geometryDataId);
@@ -33,11 +34,20 @@ export class DragRoomCmd extends RectangleCmd {
 			this.endPoint = point;
 		} else {
 			this.modifySize(point);
-			this.createFilledPolygon();
+			const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
+			let points = [];
+			polylineData.forEach(item => {
+				points = points.concat(item);
+			});
+			if (points.length >= 6) {
+				points.push(points[0], points[1], points[2]);
+			}
+			this.polygon = DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
+
 			this.addText();
-			this.endCmd(true);
-			this.createWall();
+			DrawingUtil.createWall(this.entity, points);
 			this.createDim();
+			this.endCmd(true);
 		}
 		ViewerIns.getIns().visViewer.update();
 	};
@@ -61,130 +71,27 @@ export class DragRoomCmd extends RectangleCmd {
 	};
 
 	private createDim() {
-		if (!this.geometryData) return;
+		const minPt = this.entity.getExtents().min();
+		const maxPt = this.entity.getExtents().max();
 
-		const [p1, p2, p3, p4] = this.getRectangleData();
+		const startPt = [minPt[0], maxPt[1], 0];
+		const endPt = [maxPt[0], minPt[1], 0];
+		const [p1, p2, p3, p4] = DrawingUtil.getRectangleData(startPt, endPt);
 		const offset = 10;
 		const distance = 8;
 
-		const createDimLine = (start: number[], vertex1: number[], vertex2: number[], end: number[]) => {
-			const dimEnt = this.entityId.openObject();
-			dimEnt.setColor(255, 255, 255);
+		this.createDimLine([p1[0] - distance, p1[1], 0], [p1[0] - offset, p1[1], 0], [p2[0] - offset, p2[1], 0], [p2[0] - distance, p2[1], 0]);
+		this.createDimLine([p3[0] + distance, p3[1], 0], [p3[0] + offset, p3[1], 0], [p4[0] + offset, p4[1], 0], [p4[0] + distance, p4[1], 0]);
+		this.createDimLine([p1[0], p1[1] + distance, 0], [p1[0], p1[1] + offset, 0], [p4[0], p4[1] + offset, 0], [p4[0], p4[1] + distance, 0]);
+		this.createDimLine([p2[0], p2[1] - distance, 0], [p2[0], p2[1] - offset, 0], [p3[0], p3[1] - offset, 0], [p3[0], p3[1] - distance, 0]);
 
-			dimEnt.appendPolyline([
-				start[0],
-				start[1],
-				start[2],
-				vertex1[0],
-				vertex1[1],
-				vertex1[2],
-				vertex2[0],
-				vertex2[1],
-				vertex2[2],
-				end[0],
-				end[1],
-				end[2],
-			]);
-		};
-
-		createDimLine([p1[0] - distance, p1[1], 0], [p1[0] - offset, p1[1], 0], [p2[0] - offset, p2[1], 0], [p2[0] - distance, p2[1], 0]);
-		createDimLine([p3[0] + distance, p3[1], 0], [p3[0] + offset, p3[1], 0], [p4[0] + offset, p4[1], 0], [p4[0] + distance, p4[1], 0]);
-		createDimLine([p1[0], p1[1] + distance, 0], [p1[0], p1[1] + offset, 0], [p4[0], p4[1] + offset, 0], [p4[0], p4[1] + distance, 0]);
-		createDimLine([p2[0], p2[1] - distance, 0], [p2[0], p2[1] - offset, 0], [p3[0], p3[1] - offset, 0], [p3[0], p3[1] - distance, 0]);
-
-		const createDimText = (pos: number[], text: string, angle: number, textSize: number, textStyleId: any) => {
-			const textId = this.entityId.openObject().appendText(pos, text);
-			const textEnt = textId.openAsText();
-			textId.openObject().setColor(255, 255, 255);
-			textEnt.setTextSize(textSize);
-			textEnt.setRotation(angle);
-			this.setTextStyle(textEnt, textStyleId);
-		};
-
-		const textSize = 1;
-		const textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
 		const textHeight = `${this.height.toFixed(1)}m`;
 		const textWidth = `${this.width.toFixed(1)}m`;
 
-		createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - textSize, 0], textHeight, Math.PI / 2, textSize, textStyleId);
-		createDimText([p3[0] + offset - textSize, (p1[1] + p2[1]) / 2 - textSize, 0], textHeight, Math.PI / 2, textSize, textStyleId);
-		createDimText([(p1[0] + p4[0]) / 2 - textSize, p1[1] + offset + textSize, 0], textWidth, 0, textSize, textStyleId);
-		createDimText([(p2[0] + p3[0]) / 2 - textSize, p2[1] - offset + textSize, 0], textWidth, 0, textSize, textStyleId);
-	}
-
-	private createWall() {
-		if (!this.geometryData) return;
-
-		const polylineData = this.getRectangleData();
-		let data: number[] = [];
-
-		polylineData.forEach(item => {
-			data = data.concat(item);
-		});
-		if (data.length >= 6) {
-			data.push(data[0], data[1], data[2]);
-		}
-
-		// const model = ViewerIns.getIns().visViewer.getActiveModel();
-		// const entId = model.appendEntity("wall");
-		// const ent = entId.openObject();
-		// ent.setLineWeight(10);
-		// ent.setColor(102, 102, 102);
-		// ent.appendPolyline(data);
-
-		const entId = this.entity.appendPolyline(data);
-		const weightDef = new (ViewerIns.getIns().visLib.OdTvLineWeightDef)();
-		weightDef.setValue(10);
-
-		entId.openObject().setLineWeight(weightDef);
-		entId.openObject().setColor(102, 102, 102);
-	}
-
-	private createFilledPolygon() {
-		if (this.polygonId == null) {
-			const polylineData = this.getRectangleData();
-			let data = [];
-			polylineData.forEach(item => {
-				data = data.concat(item);
-			});
-
-			this.polygonId = this.entity.appendPolygon(data);
-			this.polygon = this.polygonId.openAsPolygon();
-			this.polygon.setFilled(true);
-
-			let color: any;
-			switch (this.roomType) {
-				case TYPE_ROOM.WStyleRoom:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
-					break;
-				case TYPE_ROOM.JStyleRoom:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
-					break;
-				case TYPE_ROOM.Entrance:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(226, 226, 226);
-					break;
-				case TYPE_ROOM.LDK:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 246, 221);
-					break;
-				case TYPE_ROOM.BatchRoom:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
-					break;
-				case TYPE_ROOM.Toilet:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(0, 0, 0);
-					break;
-				case TYPE_ROOM.Corridor:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(255, 227, 158);
-					break;
-				default:
-					color = new (ViewerIns.getIns().visLib.OdTvColorDef)(254, 0, 0);
-					break;
-			}
-			this.polygonId.openObject().setColor(color, ViewerIns.getIns().visLib.GeometryTypes.kAll);
-
-			// const transparencyDef = new (ViewerIns.getIns().visLib.OdTvTransparencyDef)();
-			// transparencyDef.setValue(0.2);
-			// this.polygonId.openObject().setTransparency(transparencyDef);
-		}
+		this.createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2);
+		this.createDimText([p3[0] + offset - this.textSize, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2);
+		this.createDimText([(p1[0] + p4[0]) / 2 - this.textSize, p1[1] + offset + this.textSize, 0], textWidth, 0);
+		this.createDimText([(p2[0] + p3[0]) / 2 - this.textSize, p2[1] - offset + this.textSize, 0], textWidth, 0);
 	}
 
 	initOverlayData(): void {
@@ -196,26 +103,29 @@ export class DragRoomCmd extends RectangleCmd {
 		super.drawOverlayEntity(arrPoints);
 	}
 
+	private createDimText = (pos: number[], text: string, angle: number) => {
+		const textId = this.entityId.openObject().appendText(pos, text);
+		const textEnt = textId.openAsText();
+		textId.openObject().setColor(255, 255, 255);
+		textEnt.setTextSize(this.textSize);
+		textEnt.setRotation(angle);
+		DrawingUtil.setTextStyle(textEnt, this.textStyleId);
+	};
+
+	private createDimLine = (start: number[], vertex1: number[], vertex2: number[], end: number[]) => {
+		const dimEnt = this.entityId.openObject();
+		dimEnt.setColor(255, 255, 255);
+
+		dimEnt.appendPolyline([start[0], start[1], start[2], vertex1[0], vertex1[1], vertex1[2], vertex2[0], vertex2[1], vertex2[2], end[0], end[1], end[2]]);
+	};
+
 	private updateFilledPolygon() {
-		const polylineData = this.getRectangleData();
+		const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 		let data = [];
 		polylineData.forEach(item => {
 			data = data.concat(item);
 		});
 		this.polygon.setPoints(data);
-	}
-
-	private setTextStyle(textEntity: any, textStyleId: any) {
-		try {
-			const textStyle = textStyleId.openObject();
-			if (textStyle) {
-				textStyle.setFileName("NotoSansJP.ttf");
-				textStyle.setFont("NotoSansJP.ttf", false, false, 0, 0);
-				textEntity.setTextStyle(textStyleId);
-			}
-		} catch (error) {
-			console.error("Error when creating or opening text style:", error);
-		}
 	}
 
 	private addText() {
@@ -224,7 +134,7 @@ export class DragRoomCmd extends RectangleCmd {
 		const centerX = (this.startPoint[0] + this.endPoint[0]) / 2 - textLength;
 		const centerY = (this.startPoint[1] + this.endPoint[1]) / 2;
 		const textPosition = [centerX, centerY, 0];
-		const [p1, p2, p3, p4] = this.getRectangleData();
+		const [p1, p2, p3, p4] = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
 
 		this.width = Math.abs(p4[0] - p1[0]);
 		this.height = Math.abs(p2[1] - p1[1]);
@@ -245,15 +155,13 @@ export class DragRoomCmd extends RectangleCmd {
 		const textEntity = textId.openAsText();
 		textId.openObject().setColor(textColor.r, textColor.g, textColor.b);
 		textEntity.setTextSize(textSize);
-
-		const textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
-		this.setTextStyle(textEntity, textStyleId);
+		DrawingUtil.setTextStyle(textEntity, this.textStyleId);
 
 		const areaTextPosition = [centerX, centerY - 2, 0];
 		const areaTextId = this.entity.appendText(areaTextPosition, `${(this.height * this.width).toFixed(1)}m²`);
 		areaTextId.openObject().setColor(textColor.r, textColor.g, textColor.b);
 		const areaTextEntity = areaTextId.openAsText();
 		areaTextEntity.setTextSize(textSize);
-		this.setTextStyle(areaTextEntity, textStyleId);
+		DrawingUtil.setTextStyle(areaTextEntity, this.textStyleId);
 	}
 }
