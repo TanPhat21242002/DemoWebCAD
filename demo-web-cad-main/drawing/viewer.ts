@@ -96,7 +96,24 @@ export class ViewerIns {
 
 	public initAllEvents() {
 		this.viewer.addEventListener(VIEWER_EVENT.MOUSE_DOWN, ev => {
+			const contextMenu = document.getElementById("context-menu");
+			if (contextMenu && contextMenu.style.display === "block") {
+				return;
+			}
+
 			if (ev.button === 2) {
+				const selectionSet = this.visViewer.activeView.selectPoint(
+					[ev.offsetX * window.devicePixelRatio, ev.offsetY * window.devicePixelRatio],
+					this.visViewer.getActiveModel(),
+				);
+
+				if (selectionSet.numItems() === 1) {
+					console.log();
+					const mouseX = ev.clientX;
+					const mouseY = ev.clientY;
+					this.showContextMenu(mouseX, mouseY);
+					return;
+				}
 				this.startPan(ev);
 				return;
 			}
@@ -152,7 +169,6 @@ export class ViewerIns {
 			) {
 				this.visViewer.unselect();
 				this.visViewer.setSelected(CmdFactory.getIns().currentCmd.getSlectionSet());
-				// this.visViewer.activeView.highlight(CmdFactory.getIns().currentCmd.getSlectionSet().getIterator(), true);
 			}
 		});
 
@@ -195,7 +211,99 @@ export class ViewerIns {
 
 		document.onkeydown = ev => {
 			this.fireSubcribeEvent(VIEWER_EVENT.KEY_PRESS, ev, ev.keyCode);
+			if (ev.key === "Escape") {
+				this.hideContextMenu();
+			}
 		};
+	}
+
+	private showContextMenu(x: number, y: number) {
+		if (!CmdFactory.getIns().currentCmd) return;
+
+		let contextMenu = document.getElementById("context-menu");
+
+		if (!contextMenu) {
+			contextMenu = document.createElement("div");
+			contextMenu.id = "context-menu";
+			contextMenu.style.position = "absolute";
+			contextMenu.style.background = "#333";
+			contextMenu.style.color = "#fff";
+			contextMenu.style.padding = "10px";
+			contextMenu.style.borderRadius = "5px";
+			contextMenu.style.boxShadow = "0 2px 5px rgba(0, 0, 0, 0.5)";
+			contextMenu.style.zIndex = "1000";
+			document.body.appendChild(contextMenu);
+		}
+
+		const selectedObjects = CmdFactory.getIns().currentCmd.getSlectionSet();
+		if (!selectedObjects || selectedObjects.numItems() === 0) {
+			return;
+		}
+		const entityId = selectedObjects.getIterator().getEntity();
+		contextMenu.innerHTML = `
+		<style>
+			.context-menu-item {
+				cursor: pointer;
+				padding: 5px;
+				display: flex;
+				align-items: center;
+			}
+			.context-menu-item:hover {
+				background-color: #555;
+			}
+		</style>
+		<div class="context-menu-item" id="top">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="M160-760v-80h640v80H160Zm280 640v-408L336-424l-56-56 200-200 200 200-56 56-104-104v408h-80Z"/>
+			</svg>
+			<span style="margin-left: 5px;">Top</span>
+		</div>
+		<div class="context-menu-item" id="back-ward">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="M160-120v-80h640v80H160Zm320-160L280-480l56-56 104 104v-408h80v408l104-104 56 56-200 200Z"/></svg>
+			<span style="margin-left: 5px;">Backward</span>
+		</div>
+		<div class="context-menu-item" id="add-point">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+			<span style="margin-left: 5px;">Add point</span>
+		</div>
+		<div class="context-menu-item" id="add-wall">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="M640-121v-120H520v-80h120v-120h80v120h120v80H720v120h-80ZM160-240v-80h283q-3 21-2.5 40t3.5 40H160Zm0-160v-80h386q-23 16-41.5 36T472-400H160Zm0-160v-80h600v80H160Zm0-160v-80h600v80H160Z"/></svg>
+			<span style="margin-left: 5px;">Add Wall</span>
+		</div>
+		<div class="context-menu-item" id="delete-wall">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="m576-80-56-56 104-104-104-104 56-56 104 104 104-104 56 56-104 104 104 104-56 56-104-104L576-80ZM120-320v-80h280v80H120Zm0-160v-80h440v80H120Zm0-160v-80h440v80H120Z"/></svg>
+			<span style="margin-left: 5px;">Delete Wall</span>
+		</div>
+		<div class="context-menu-item" id="remove">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+				<path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+			<span style="margin-left: 5px;">Remove</span>
+		</div>
+		`;
+
+		contextMenu.style.left = `${x}px`;
+		contextMenu.style.top = `${y}px`;
+		contextMenu.style.display = "block";
+
+		document.getElementById("top").onclick = () => this.handleOrderTop(entityId);
+
+		document.addEventListener("click", this.hideContextMenu);
+	}
+
+	private handleOrderTop(entityId: number) {
+		CmdFactory.getIns().currentCmd.handleOrderTop(entityId);
+	}
+
+	private hideContextMenu() {
+		const menu = document.getElementById("context-menu");
+		if (menu) {
+			menu.style.display = "none";
+		}
+		document.removeEventListener("click", this.hideContextMenu);
 	}
 
 	private handleMouseWheel(ev: WheelEvent) {

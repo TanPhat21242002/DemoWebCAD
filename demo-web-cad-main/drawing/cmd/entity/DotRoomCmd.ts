@@ -30,6 +30,18 @@ export class DotRoomCmd extends EntityCmd {
 			}
 			if (this.polylinePoints.length > 2) {
 				if (DrawingUtil.compareTwoPoints(this.polylinePoints[0], this.polylinePoints[this.polylinePoints.length - 1])) {
+					this.polylinePoints.pop();
+					this.polylinePoints.push([...this.polylinePoints[0]]);
+					this.isClosedPolyline = true;
+					this.closePointIndex = this.polylinePoints.length - 1;
+					this.geometryData.setPoints(this.getPolylineData());
+					let points = [];
+					this.polylinePoints.forEach(item => {
+						points = points.concat(item);
+					});
+					DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
+					this.addText();
+
 					this.endCmd(true);
 					DrawingUtil.removeAllEnt(this.segmentTexts, this.entity);
 					DrawingUtil.removeAllEnt(this.vertexPoints, this.entity);
@@ -292,7 +304,6 @@ export class DotRoomCmd extends EntityCmd {
 						points = points.concat(item);
 					});
 					DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
-					DrawingUtil.createDim(this.entity, this.entityId, this.textStyleId, this.textSize, true);
 					this.addText();
 				}
 				this.endCmd(true);

@@ -480,7 +480,7 @@ export class DrawingUtil {
 		dimEnt.appendPolyline([start[0], start[1], start[2], vertex1[0], vertex1[1], vertex1[2], vertex2[0], vertex2[1], vertex2[2], end[0], end[1], end[2]]);
 	};
 
-	public static createDim(entity: any, entityId: any, textStyleId: any, textSize: any, isDotRoom: boolean) {
+	public static createDim(entity: any, entityId: any, textStyleId: any, textSize: any, isDotRoom: any) {
 		const minPt = entity.getExtents().min();
 		const maxPt = entity.getExtents().max();
 

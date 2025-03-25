@@ -44,7 +44,6 @@ export class DragRoomCmd extends RectangleCmd {
 			}
 			this.polygon = DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
 			this.addText();
-			DrawingUtil.createDim(this.entity, this.entityId, this.textStyleId, this.textSize, false);
 			this.endCmd(true);
 		}
 		ViewerIns.getIns().visViewer.update();
