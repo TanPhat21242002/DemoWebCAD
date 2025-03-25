@@ -44,7 +44,7 @@ export class DragRoomCmd extends RectangleCmd {
 			}
 			this.polygon = DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
 			this.addText();
-			this.createDim();
+			DrawingUtil.createDim(this.entity, this.entityId, this.textStyleId, this.textSize, false);
 			this.endCmd(true);
 		}
 		ViewerIns.getIns().visViewer.update();
@@ -67,60 +67,6 @@ export class DragRoomCmd extends RectangleCmd {
 			this.updateFilledPolygon();
 		}
 	};
-
-	private createDim() {
-		const minPt = this.entity.getExtents().min();
-		const maxPt = this.entity.getExtents().max();
-
-		const startPt = [minPt[0], maxPt[1], 0];
-		const endPt = [maxPt[0], minPt[1], 0];
-		const [p1, p2, p3, p4] = DrawingUtil.getRectangleData(startPt, endPt);
-		const offset = 10;
-		const distance = 8;
-
-		DrawingUtil.createDimLine(
-			[p1[0] - distance, p1[1], 0],
-			[p1[0] - offset, p1[1], 0],
-			[p2[0] - offset, p2[1], 0],
-			[p2[0] - distance, p2[1], 0],
-			this.entityId,
-		);
-		DrawingUtil.createDimLine(
-			[p3[0] + distance, p3[1], 0],
-			[p3[0] + offset, p3[1], 0],
-			[p4[0] + offset, p4[1], 0],
-			[p4[0] + distance, p4[1], 0],
-			this.entityId,
-		);
-		DrawingUtil.createDimLine(
-			[p1[0], p1[1] + distance, 0],
-			[p1[0], p1[1] + offset, 0],
-			[p4[0], p4[1] + offset, 0],
-			[p4[0], p4[1] + distance, 0],
-			this.entityId,
-		);
-		DrawingUtil.createDimLine(
-			[p2[0], p2[1] - distance, 0],
-			[p2[0], p2[1] - offset, 0],
-			[p3[0], p3[1] - offset, 0],
-			[p3[0], p3[1] - distance, 0],
-			this.entityId,
-		);
-
-		const textHeight = `${this.height.toFixed(1)}m`;
-		const textWidth = `${this.width.toFixed(1)}m`;
-
-		DrawingUtil.createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - this.textSize, 0], textHeight, Math.PI / 2, this.entityId, this.textStyleId);
-		DrawingUtil.createDimText(
-			[p3[0] + offset - this.textSize, (p1[1] + p2[1]) / 2 - this.textSize, 0],
-			textHeight,
-			Math.PI / 2,
-			this.entityId,
-			this.textStyleId,
-		);
-		DrawingUtil.createDimText([(p1[0] + p4[0]) / 2 - this.textSize, p1[1] + offset + this.textSize, 0], textWidth, 0, this.entityId, this.textStyleId);
-		DrawingUtil.createDimText([(p2[0] + p3[0]) / 2 - this.textSize, p2[1] - offset + this.textSize, 0], textWidth, 0, this.entityId, this.textStyleId);
-	}
 
 	initOverlayData(): void {
 		const arrPoints = DrawingUtil.getAllPointCloudPolyline(this.geometryData);

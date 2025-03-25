@@ -479,4 +479,32 @@ export class DrawingUtil {
 
 		dimEnt.appendPolyline([start[0], start[1], start[2], vertex1[0], vertex1[1], vertex1[2], vertex2[0], vertex2[1], vertex2[2], end[0], end[1], end[2]]);
 	};
+
+	public static createDim(entity: any, entityId: any, textStyleId: any, textSize: any, isDotRoom: boolean) {
+		const minPt = entity.getExtents().min();
+		const maxPt = entity.getExtents().max();
+
+		const startPt = [minPt[0], maxPt[1], 0];
+		const endPt = [maxPt[0], minPt[1], 0];
+		const [p1, p2, p3, p4] = DrawingUtil.getRectangleData(startPt, endPt);
+		let offset = 10,
+			distance = 8;
+		if (isDotRoom) {
+			offset = 15;
+			distance = 9;
+		}
+
+		DrawingUtil.createDimLine([p1[0] - distance, p1[1], 0], [p1[0] - offset, p1[1], 0], [p2[0] - offset, p2[1], 0], [p2[0] - distance, p2[1], 0], entityId);
+		DrawingUtil.createDimLine([p3[0] + distance, p3[1], 0], [p3[0] + offset, p3[1], 0], [p4[0] + offset, p4[1], 0], [p4[0] + distance, p4[1], 0], entityId);
+		DrawingUtil.createDimLine([p1[0], p1[1] + distance, 0], [p1[0], p1[1] + offset, 0], [p4[0], p4[1] + offset, 0], [p4[0], p4[1] + distance, 0], entityId);
+		DrawingUtil.createDimLine([p2[0], p2[1] - distance, 0], [p2[0], p2[1] - offset, 0], [p3[0], p3[1] - offset, 0], [p3[0], p3[1] - distance, 0], entityId);
+
+		const textHeight = `${(p1[1] - p2[1]).toFixed(1)}m`;
+		const textWidth = `${(p4[0] - p1[0]).toFixed(1)}m`;
+
+		DrawingUtil.createDimText([p1[0] - offset - 1, (p1[1] + p2[1]) / 2 - textSize, 0], textHeight, Math.PI / 2, entityId, textStyleId);
+		DrawingUtil.createDimText([p3[0] + offset - textSize, (p1[1] + p2[1]) / 2 - textSize, 0], textHeight, Math.PI / 2, entityId, textStyleId);
+		DrawingUtil.createDimText([(p1[0] + p4[0]) / 2 - textSize, p1[1] + offset + textSize, 0], textWidth, 0, entityId, textStyleId);
+		DrawingUtil.createDimText([(p2[0] + p3[0]) / 2 - textSize, p2[1] - offset + textSize, 0], textWidth, 0, entityId, textStyleId);
+	}
 }

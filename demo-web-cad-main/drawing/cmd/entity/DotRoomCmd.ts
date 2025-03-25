@@ -292,6 +292,7 @@ export class DotRoomCmd extends EntityCmd {
 						points = points.concat(item);
 					});
 					DrawingUtil.createFilledPolygon(this.entity, this.roomType, points);
+					DrawingUtil.createDim(this.entity, this.entityId, this.textStyleId, this.textSize, true);
 					this.addText();
 				}
 				this.endCmd(true);
