@@ -3,6 +3,8 @@ import { TYPE_ROOM } from "../config";
 import { ViewerIns } from "../viewer";
 
 export class DrawingUtil {
+	static tolerancePt = 0.5;
+
 	public static getAllPointCloudCircle(geometryData) {
 		const arr = [];
 		const point3Center = geometryData.getCenter();
@@ -223,7 +225,7 @@ export class DrawingUtil {
 		const point3d01 = ViewerIns.getIns().createPoint3DFromArray(point01);
 		const point3d02 = ViewerIns.getIns().createPoint3DFromArray(point02);
 		const distanceTo = point3d01.distanceTo(point3d02);
-		return distanceTo < 0.5;
+		return distanceTo < this.tolerancePt;
 	}
 
 	public static getPropertiesOfSelectionSet(selectionSet) {

@@ -239,7 +239,6 @@ export class ViewerIns {
 		if (!selectedObjects || selectedObjects.numItems() === 0) {
 			return;
 		}
-		const entityId = selectedObjects.getIterator().getEntity();
 		contextMenu.innerHTML = `
 		<style>
 			.context-menu-item {
@@ -289,13 +288,7 @@ export class ViewerIns {
 		contextMenu.style.top = `${y}px`;
 		contextMenu.style.display = "block";
 
-		document.getElementById("top").onclick = () => this.handleOrderTop(entityId);
-
 		document.addEventListener("click", this.hideContextMenu);
-	}
-
-	private handleOrderTop(entityId: number) {
-		CmdFactory.getIns().currentCmd.handleOrderTop(entityId);
 	}
 
 	private hideContextMenu() {

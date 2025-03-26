@@ -51,33 +51,6 @@ export class SelectCmd extends RectangleCmd {
 		}
 	}
 
-	public handleOrderTop(entityId: any) {
-		const entity = entityId.openObject();
-		const tmpInterators = entity.getGeometryDataIterator();
-		for (; !tmpInterators.done(); tmpInterators.step()) {
-			const geometryDataId = tmpInterators.getGeometryData();
-			switch (geometryDataId.getType()) {
-				//polyline
-				case 1:
-					break;
-				//polygon
-				case 7:
-					const polygonId = geometryDataId.openAsPolygon();
-					polygonId.setFilled(false);
-					break;
-				//text
-				case 8:
-					break;
-			}
-		}
-	}
-
-	public deleteObject(objectId: number) {
-		const model = ViewerIns.getIns().visViewer.getActiveModel();
-		model.removeEntity(objectId);
-		this.resetSelectCmd();
-	}
-
 	override onKeyPress = (ev: KeyboardEvent, keyCode: number) => {
 		switch (keyCode) {
 			//ESC

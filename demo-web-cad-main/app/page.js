@@ -19,8 +19,10 @@ export default function Home() {
 	const [currentFloor, setCurrentFloor] = useState("1F");
 
 	const onClickActionCmd = (cmd, roomType, entityId, geometryDataId) => {
-		if (cmd === "DRAFT") {
+		if (cmd === "DOWNLOAD") {
 			downloadFileDwg();
+		} else if (cmd === "STAIR_TYPE") {
+			CmdFactory.getIns().createCmd("STAIR", roomType, entityId, geometryDataId);
 		} else {
 			CmdFactory.getIns().createCmd(cmd, roomType, entityId, geometryDataId);
 		}
@@ -83,9 +85,7 @@ export default function Home() {
 			form.append("file", file);
 			let request = new XMLHttpRequest();
 			request.responseType = "blob";
-
 			request.open("POST", "https://file-oda-converter.tgl-cloud.com/FileConverterDownload/", true);
-
 			request.onreadystatechange = () => {
 				setShowLoading(false);
 				if (request.readyState === 4) {

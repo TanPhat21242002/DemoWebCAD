@@ -4,15 +4,23 @@ import { useState, useEffect } from "react";
 import "./side-panel.css";
 import { CMD_NAME, TYPE_ROOM } from "../drawing/config";
 import { CmdFactory } from "../drawing/cmd/CmdFactory";
+import StairPanel from "./stair-panel";
 
 export default function SidePanel({ onClickActionCmd, isShow }) {
 	const [showRoomPanel, setShowRoomPanel] = useState(false);
+	const [showStairPanel, setShowStairPanel] = useState(false);
 	const [activeButton, setActiveButton] = useState("drag");
 	const [pressedRoomOption, setPressedRoomOption] = useState(null);
 	const [isRectangleCmdActive, setIsRectangleCmdActive] = useState(false);
 
 	const handleRoomClick = () => {
 		setShowRoomPanel(!showRoomPanel);
+		if (showStairPanel) setShowStairPanel(false);
+	};
+
+	const handleStairClick = () => {
+		setShowStairPanel(!showStairPanel);
+		if (showRoomPanel) setShowRoomPanel(false);
 	};
 
 	const handleButtonClick = buttonType => {
@@ -72,11 +80,11 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 
 	return (
 		<div className="side-panel" style={{ display: isShow ? "" : "none" }}>
-			<div className="side-item" onClick={() => onClickActionCmd("DRAFT")}>
+			<div className="side-item" onClick={() => onClickActionCmd("DOWNLOAD")}>
 				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
 					<path d="M560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v120h-80v-80H520v-200H240v640h240v80H240Zm280-400Zm241 199-19-18 37 37-18-19Z" />
 				</svg>
-				<span>Draft</span>
+				<span>DOWNLOAD</span>
 			</div>
 			<div className="side-item" onClick={() => onClickActionCmd("SITE")}>
 				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
@@ -90,7 +98,7 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 				</svg>
 				<span>Room</span>
 			</div>
-			<div className="side-item" onClick={() => onClickActionCmd("STAIR")}>
+			<div className={`side-item ${showStairPanel ? "active" : ""}`} onClick={handleStairClick}>
 				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
 					<path d="M80-200v-80h240v-240h240v-240h320v80H640v240H400v240H80Z" />
 				</svg>
@@ -149,6 +157,8 @@ export default function SidePanel({ onClickActionCmd, isShow }) {
 					</div>
 				</div>
 			)}
+
+			{showStairPanel && <StairPanel onClickActionCmd={onClickActionCmd} isShow={showStairPanel} onClose={() => setShowStairPanel(false)} />}
 		</div>
 	);
 }
