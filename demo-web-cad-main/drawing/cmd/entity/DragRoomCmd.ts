@@ -11,7 +11,6 @@ export class DragRoomCmd extends RectangleCmd {
 	private width: number;
 	private height: number;
 	private textStyleId = ViewerIns.getIns().visViewer.createTextStyle(`textStyle_${Date.now()}`);
-	textSize = 1;
 
 	constructor(cmdName: string, entityId?, geometryDataId?, roomType?) {
 		super(cmdName, entityId, geometryDataId);
@@ -66,15 +65,6 @@ export class DragRoomCmd extends RectangleCmd {
 			this.updateFilledPolygon();
 		}
 	};
-
-	initOverlayData(): void {
-		const arrPoints = DrawingUtil.getAllPointCloudPolyline(this.geometryData);
-		const centers = DrawingUtil.getCenterPointCloudEntity(this.entity);
-		if (centers.length > 0) {
-			arrPoints.push(centers[0]);
-		}
-		super.drawOverlayEntity(arrPoints);
-	}
 
 	private updateFilledPolygon() {
 		const polylineData = DrawingUtil.getRectangleData(this.startPoint, this.endPoint);
